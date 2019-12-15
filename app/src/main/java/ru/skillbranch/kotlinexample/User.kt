@@ -66,11 +66,8 @@ class User private constructor(
     ) : this(firstName, lastName, rawPhone = rawPhone, meta = mapOf("auth" to "sms")) {
         println("Secondary phone constructor")
         require(isPhoneValid(rawPhone)) { "Enter a valid phone number starting with a + and containing 11 digits" }
+        requestAccessCode()
 
-        val code = generateAccessCode()
-        passwordHash = encrypt(code)
-        accessCode = code
-        senAccessCodeToUser(phone, code)
     }
 
     init {
@@ -94,7 +91,11 @@ class User private constructor(
         """.trimIndent()
     }
 
-    fun checkPassword(pass: String) = encrypt(pass) == passwordHash
+    fun checkPassword(pass: String): Boolean {
+        val a = 1
+        println("${encrypt(pass)} $passwordHash")
+        return encrypt(pass) == passwordHash
+    }
     fun changePassword(oldPass: String, newPass: String) {
         if (checkPassword(oldPass)) passwordHash = encrypt(newPass)
         else throw IllegalArgumentException("The entered password does not match the current password")
@@ -117,8 +118,15 @@ class User private constructor(
         }.toString()
     }
 
-    private fun senAccessCodeToUser(phone: String?, code: String) {
+    private fun sendAccessCodeToUser(phone: String?, code: String) {
         println("....  sending access code: $code on $phone")
+    }
+
+    fun requestAccessCode() {
+        val code = generateAccessCode()
+        passwordHash = encrypt(code)
+        accessCode = code
+        sendAccessCodeToUser(phone, code)
     }
 
     private fun String.md5(): String {

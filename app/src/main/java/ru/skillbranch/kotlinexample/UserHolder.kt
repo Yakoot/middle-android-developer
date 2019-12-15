@@ -23,14 +23,15 @@ object UserHolder {
     ): User {
         User.makeUser(fullName, phone = rawPhone)
             .run {
-                require(!map.containsKey(login)) { "A user with this phone already exists" }
-                map[login] = this
+                val normalizedPhone = normalizePhone(login)
+                require(!map.containsKey(normalizedPhone)) { "A user with this phone already exists" }
+                map[normalizedPhone] = this
                 return this
             }
     }
 
     fun loginUser(login: String, password: String): String? {
-        return map[login.trim()]?.run {
+        return (map[login.trim()]?:map[normalizePhone(login)])?.run {
             if (checkPassword(password)) userInfo
             else null
         }
@@ -39,5 +40,15 @@ object UserHolder {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun clearHolder(){
         map.clear()
+    }
+
+    fun requestAccessCode(login: String): Unit? {
+        return map[normalizePhone(login)]?.run {
+            requestAccessCode()
+        }
+    }
+
+    private fun normalizePhone(phone: String): String {
+        return phone.replace("[^\\d]".toRegex(), "")
     }
 }

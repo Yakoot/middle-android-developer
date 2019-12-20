@@ -51,4 +51,23 @@ object UserHolder {
     private fun normalizePhone(phone: String): String {
         return phone.replace("[^\\d]".toRegex(), "")
     }
+
+    fun importUsers(list: List<String>): List<User> {
+        val userList = mutableListOf<User>()
+        list.forEach {
+            val partList: List<String> = it.split(";")
+            val (fullname, email, saltHash, phone) = partList
+            println("$fullname, $email, $saltHash, $phone")
+            User.makeUser(fullname, email, phone = phone, saltHash = saltHash)
+                .run {
+                    val normalizedPhone = normalizePhone(login)
+                    require(!map.containsKey(normalizedPhone)) { "A user with this phone already exists" }
+                    map[normalizedPhone] = this
+                    return this
+                }
+
+
+        }
+        return listOf()
+    }
 }

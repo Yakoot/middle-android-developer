@@ -38,9 +38,13 @@ class User private constructor(
         }
         get() = _login!!
 
-    private val salt: String by lazy {
+
+
+    private val _salt: String by lazy {
         ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
     }
+
+    private var salt: String = _salt
 
     private lateinit var passwordHash: String
 
@@ -68,6 +72,20 @@ class User private constructor(
         require(isPhoneValid(rawPhone)) { "Enter a valid phone number starting with a + and containing 11 digits" }
         requestAccessCode()
 
+    }
+
+    // for csv
+    constructor(
+        firstName: String,
+        lastName: String?,
+        rawPhone: String?,
+        email: String?,
+        saltHash: String
+    ) : this(firstName, lastName, rawPhone = rawPhone, email = email, meta = mapOf("src" to "csv")) {
+        println("Secondary csv constructor")
+        val (newSalt, newHash) = saltHash.split(":")
+        passwordHash = newHash
+        salt = newSalt
     }
 
     init {
@@ -141,10 +159,12 @@ class User private constructor(
             fullName: String,
             email: String? = null,
             password: String? = null,
-            phone: String? = null
+            phone: String? = null,
+            saltHash: String? = null
         ): User {
             val (firstName, lastName) = fullName.fullNameToPair()
             return when {
+                !saltHash.isNullOrBlank() -> User(firstName, lastName, phone, email, saltHash)
                 !phone.isNullOrBlank() -> User(firstName, lastName, phone)
                 !email.isNullOrBlank() && !password.isNullOrBlank() -> User(
                     firstName,

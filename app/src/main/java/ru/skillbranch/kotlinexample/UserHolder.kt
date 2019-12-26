@@ -63,11 +63,9 @@ object UserHolder {
                     val normalizedPhone = normalizePhone(login)
                     require(!map.containsKey(normalizedPhone)) { "A user with this phone already exists" }
                     map[normalizedPhone] = this
-                    return this
+                    userList.add(this)
                 }
-
-
         }
-        return listOf()
+        return userList
     }
 }

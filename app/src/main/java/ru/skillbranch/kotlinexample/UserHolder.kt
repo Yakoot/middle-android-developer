@@ -60,9 +60,11 @@ object UserHolder {
             println("$fullname, $email, $saltHash, $phone")
             User.makeUser(fullname, email, phone = phone, saltHash = saltHash)
                 .run {
-                    val normalizedPhone = normalizePhone(login)
-                    require(!map.containsKey(normalizedPhone)) { "A user with this phone already exists" }
-                    map[normalizedPhone] = this
+                    if (email.isNullOrBlank()) {
+                        val normalizedPhone = normalizePhone(login)
+                        require(!map.containsKey(normalizedPhone)) { "A user with this phone already exists" }
+                    }
+                    map[login] = this
                     userList.add(this)
                 }
         }

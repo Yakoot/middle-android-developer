@@ -94,7 +94,7 @@ class User private constructor(
         check(!firstName.isBlank()) { "First name must be not blank" }
         check(email.isNullOrBlank() || rawPhone.isNullOrBlank()) { "Email or phone must be not blank" }
 
-        phone = rawPhone
+        phone = if (rawPhone.isNullOrBlank()) null else rawPhone
         login = email ?: phone!!
 
         userInfo = """

@@ -225,6 +225,7 @@ class ExampleUnitTest {
     @Test
     fun import_users_from_csv() {
         val holder = UserHolder
+
         val listCsvUsers =
             arrayListOf<String>(
                 " John Doe ;John_Doe@unknown.com;[B@7591083d:c6adb4becdc64e92857e1e2a0fd6af84;;",

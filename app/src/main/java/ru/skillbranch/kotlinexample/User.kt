@@ -95,15 +95,14 @@ class User private constructor(
         check(email.isNullOrBlank() || rawPhone.isNullOrBlank()) { "Email or phone must be not blank" }
 
         phone = if (rawPhone.isNullOrBlank()) null else rawPhone
-        login = email ?: phone!!
-
+        login = if (email.isNullOrEmpty()) phone!! else email
         userInfo = """
             firstName: $firstName
             lastName: $lastName
             login: $login
             fullName: $fullName
             initials: $initials
-            email: $email
+            email: ${if (email.isNullOrEmpty()) null else email}
             phone: $phone
             meta: $meta
         """.trimIndent()

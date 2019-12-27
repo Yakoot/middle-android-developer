@@ -2,7 +2,9 @@ package ru.skillbranch.kotlinexample
 
 import org.junit.After
 import org.junit.Assert
+import org.junit.Assert.assertArrayEquals
 import org.junit.Test
+import ru.skillbranch.kotlinexample.extensions.dropLastUntil
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -249,5 +251,17 @@ class ExampleUnitTest {
         val successResult = holder.loginUser("john_doe@unknown.com", "testPass")
 
         Assert.assertEquals(expectedInfo, successResult)
+    }
+
+    @Test
+    fun dropLastUntil() {
+
+        assertArrayEquals(arrayOf(1), listOf(1, 2, 3).dropLastUntil { it == 2 }.toTypedArray())
+
+        assertArrayEquals(
+            arrayOf("House", "Nymeros", "Martell"),
+            "House Nymeros Martell of Sunspear".split(" ")
+                .dropLastUntil { it == "of" }.toTypedArray()
+        )
     }
 }

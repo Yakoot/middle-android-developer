@@ -48,7 +48,11 @@ class RootActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.options_menu, menu)
         val searchItem = menu?.findItem(R.id.action_search)
         val searchView = searchItem?.actionView as SearchView
-        searchView.queryHint = "Введите название чата"
+        searchView.queryHint = getString(R.string.search_hint)
+        if (viewModel.isSearch) {
+            searchItem.expandActionView()
+            searchView.setQuery(viewModel.searchQuery, false)
+        }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String): Boolean {
@@ -64,13 +68,11 @@ class RootActivity : AppCompatActivity() {
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
                 viewModel.handleSearchMode(true)
-                Log.d("test", "true")
                 return true
             }
 
             override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
                 viewModel.handleSearchMode(false)
-                Log.d("test", "false")
                 return true
             }
         })

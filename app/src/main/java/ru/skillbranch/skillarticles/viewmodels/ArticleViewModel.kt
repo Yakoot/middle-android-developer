@@ -44,12 +44,16 @@ class ArticleViewModel(private val articleId: String) : BaseViewModel<ArticleSta
         subscribeOnDataSource(repository.getAppSettings()) { settings, state ->
             state.copy(
                 isDarkMode = settings.isDarkMode,
-                isBigText = settings.isBigText,
-                searchQuery = settings.searchQuery,
-                isSearch = settings.isSearch
+                isBigText = settings.isBigText
             )
         }
     }
+
+    val isSearch
+        get() = currentState.isSearch
+
+    val searchQuery
+        get() = currentState.searchQuery
 
     override fun getArticleContent(): LiveData<List<Any>?> {
         return repository.loadArticleContent(articleId)
@@ -128,13 +132,11 @@ class ArticleViewModel(private val articleId: String) : BaseViewModel<ArticleSta
     }
 
     override fun handleSearchMode(isSearch: Boolean) {
-        val settings = currentState.toAppSettings()
-        repository.updateSettings(settings.copy(isBigText = isSearch))
+        updateState { it.copy(isSearch = isSearch) }
     }
 
     override fun handleSearch(query: String?) {
-        val settings = currentState.toAppSettings()
-        repository.updateSettings(settings.copy(searchQuery = query))
+        updateState { it.copy(searchQuery = query) }
     }
 
 }

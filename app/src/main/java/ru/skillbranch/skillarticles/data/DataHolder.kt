@@ -95,7 +95,9 @@ data class ArticlePersonalInfo(
 
 data class AppSettings(
     val isDarkMode: Boolean = false,
-    val isBigText: Boolean = false
+    val isBigText: Boolean = false,
+    val isSearch: Boolean = false,
+    val searchQuery: String? = null
 )
 
 val longText: String = """

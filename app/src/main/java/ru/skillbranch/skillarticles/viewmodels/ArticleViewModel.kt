@@ -44,7 +44,9 @@ class ArticleViewModel(private val articleId: String) : BaseViewModel<ArticleSta
         subscribeOnDataSource(repository.getAppSettings()) { settings, state ->
             state.copy(
                 isDarkMode = settings.isDarkMode,
-                isBigText = settings.isBigText
+                isBigText = settings.isBigText,
+                searchQuery = settings.searchQuery,
+                isSearch = settings.isSearch
             )
         }
     }
@@ -126,11 +128,13 @@ class ArticleViewModel(private val articleId: String) : BaseViewModel<ArticleSta
     }
 
     override fun handleSearchMode(isSearch: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val settings = currentState.toAppSettings()
+        repository.updateSettings(settings.copy(isBigText = isSearch))
     }
 
     override fun handleSearch(query: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val settings = currentState.toAppSettings()
+        repository.updateSettings(settings.copy(searchQuery = query))
     }
 
 }

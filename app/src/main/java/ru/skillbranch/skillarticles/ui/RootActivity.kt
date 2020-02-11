@@ -26,6 +26,9 @@ class RootActivity : AppCompatActivity() {
 
     private lateinit var viewModel: ArticleViewModel
 
+    private var searchQuery: String? = null
+    private var isSearching = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root)
@@ -37,6 +40,11 @@ class RootActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
         viewModel.observeState(this) {
             renderUI(it)
+
+            if (it.isSearch) {
+                isSearching = true
+                searchQuery = it.searchQuery
+            }
         }
 
         viewModel.observeNotifications(this) {
@@ -49,9 +57,10 @@ class RootActivity : AppCompatActivity() {
         val searchItem = menu?.findItem(R.id.action_search)
         val searchView = searchItem?.actionView as SearchView
         searchView.queryHint = getString(R.string.search_hint)
-        if (viewModel.isSearch) {
+        if (isSearching) {
             searchItem.expandActionView()
-            searchView.setQuery(viewModel.searchQuery, false)
+            searchView.setQuery(searchQuery, false)
+            searchView.clearFocus()
         }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{

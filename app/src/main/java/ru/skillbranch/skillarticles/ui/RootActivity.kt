@@ -27,7 +27,11 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
 
     override val layout: Int = R.layout.activity_root
 
-    private override lateinit var viewModel: ArticleViewModel
+    override val viewModel: ArticleViewModel by lazy {
+        val vmFactory =
+            ViewModelFactory("0")
+        ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
+    }
 
     private var searchQuery: String? = null
     private var isSearching = false
@@ -37,10 +41,6 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
 
         setContentView(R.layout.activity_root)
 
-
-        val vmFactory =
-            ViewModelFactory("0")
-        viewModel = ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
         viewModel.observeState(this) {
             renderUI(it)
         }
@@ -113,7 +113,7 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun renderNotification(notify: Notify) {
+    override fun renderNotification(notify: Notify) {
         val snackbar = Snackbar.make(coordinator_container, notify.message, Snackbar.LENGTH_LONG)
             .setAnchorView(bottombar)
             .setActionTextColor(getColor(R.color.color_accent_dark))
@@ -171,7 +171,8 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
 
     private fun renderUI(data: ArticleState) {
 
-        bottombar.setSearchState(data.isSearch)
+        if (data.isSearch) showSearchBar() else hideSearchBar()
+
         btn_settings.isChecked = data.isShowMenu
         if (data.isShowMenu) submenu.open() else submenu.close()
 

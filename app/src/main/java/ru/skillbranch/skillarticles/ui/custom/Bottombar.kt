@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewAnimationUtils
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -88,10 +89,8 @@ class Bottombar @JvmOverloads constructor(
             btn_result_down.isEnabled = true
         }
 
-        when (position) {
-            0 -> btn_result_up.isEnabled = false
-            searchCount - 1 -> btn_result_down.isEnabled = false
-        }
+        if (position == 0) btn_result_up.isEnabled = false
+        if (position == searchCount - 1) btn_result_down.isEnabled = false
     }
 
     private class SavedState : BaseSavedState, Parcelable {

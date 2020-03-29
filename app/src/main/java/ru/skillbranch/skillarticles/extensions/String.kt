@@ -7,7 +7,6 @@ fun String?.indexesOf(query: String, ignoreCase: Boolean = true): List<Int> {
     val results: MutableList<Int> = mutableListOf()
     var index: Int = this?.indexOf(query, 0, ignoreCase) ?: -1
     while(index >= 0) {
-        Log.d("testtest", index.toString())
         results.add(index)
         index = this?.indexOf(query, index + 1, ignoreCase) ?: -1
     }

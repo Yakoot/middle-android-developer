@@ -27,7 +27,18 @@ object MarkdownParser {
     }
 
     fun clear(string: String?): String? {
-        return null
+        if (string == null) return null
+        return findElements(string).fold("") { acc, element ->
+            "$acc${clearElement(element)}"
+        }
+    }
+
+    fun clearElement(element: Element): String {
+        return if (element.elements.isEmpty()) element.text.toString() else {
+            element.elements.fold("") { acc, item ->
+                "$acc${clearElement(item)}"
+            }
+        }
     }
 
     private fun findElements(string: CharSequence): List<Element> {

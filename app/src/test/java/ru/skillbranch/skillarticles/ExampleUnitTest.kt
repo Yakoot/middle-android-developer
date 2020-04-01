@@ -165,6 +165,14 @@ class ExampleUnitTest {
         assertEquals(expectedMarkdown["links"], actualLinks)
     }
 
+    @Test
+    fun parse_clear() {
+        val result = MarkdownParser.clear(markdownString)
+        assertEquals(markdownClearString, result)
+
+        println(result)
+    }
+
     private fun printResults(list: List<String>) {
         val iterator = list.iterator()
         while (iterator.hasNext()) {

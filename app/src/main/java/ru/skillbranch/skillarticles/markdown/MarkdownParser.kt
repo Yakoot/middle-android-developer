@@ -222,4 +222,14 @@ sealed class Element() {
         override val text: CharSequence,
         override val elements: List<Element> = emptyList()
     ) : Element()
+
+    data class OrderedListItem(
+        override val text: CharSequence,
+        override val elements: List<Element> = emptyList()
+    ): Element()
+
+    data class BlockCode(
+        override val text: CharSequence,
+        override val elements: List<Element> = emptyList()
+    ): Element()
 }

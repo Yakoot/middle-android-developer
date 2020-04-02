@@ -5,18 +5,30 @@ import java.util.regex.Pattern
 object MarkdownParser {
     private val LINE_SEPARATOR = System.getProperty("line.separator") ?: "\n"
 
-    private const val UNORDERED_LIST_ITEM_GROUP = "(^[*+-] .+$)"
+    private const val UNORDERED_LIST_GROUP = "(^[*+-] .+$)"
     private const val HEADER_GROUP = "(^#{1,6} .+?$)"
     private const val QUOTE_GROUP = "(^> .+?$)"
     private const val ITALIC_GROUP = "((?<!\\*)\\*[^*].*?[^*]?\\*(?!\\*)|(?<!_)_[^_].*?[^_]?_(?!_))"
-    private const val BOLD_GROUP = "((?<!\\*)\\*\\*[^*].*?[^*]?\\*\\*(?!\\*)|(?<!_)__[^_].*?[^_]?__(?!_))"
+    private const val BOLD_GROUP =
+        "((?<!\\*)\\*\\*[^*].*?[^*]?\\*\\*(?!\\*)|(?<!_)__[^_].*?[^_]?__(?!_))"
     private const val STRIKE_GROUP = "((?<!~)~~[^~].*?[^~]?~~(?!~))"
     private const val RULE_GROUP = "(^[*-_]{3}$)"
     private const val INLINE_GROUP = "((?<!`)`[^`\\s].*?[^`\\s]?`(?!`))"
     private const val LINK_GROUP = "(\\[[^\\[\\]]*?]\\(.+?\\)|^\\[*?]\\(.*?\\))"
+    private const val ORDERED_LIST_GROUP = "(^\\d{1,2}\\. .+?$)"
 
 
-    private const val MARKDOWN_GROUPS = "$UNORDERED_LIST_ITEM_GROUP|$HEADER_GROUP|$QUOTE_GROUP|$ITALIC_GROUP|$BOLD_GROUP|$STRIKE_GROUP|$RULE_GROUP|$INLINE_GROUP|$LINK_GROUP"
+    private const val MARKDOWN_GROUPS =
+        "$UNORDERED_LIST_GROUP|" +
+                "$HEADER_GROUP|" +
+                "$QUOTE_GROUP|" +
+                "$ITALIC_GROUP|" +
+                "$BOLD_GROUP|" +
+                "$STRIKE_GROUP|" +
+                "$RULE_GROUP|" +
+                "$INLINE_GROUP|" +
+                "$LINK_GROUP|" +
+                "$ORDERED_LIST_GROUP"
 
     private val elementsPattern by lazy { Pattern.compile(MARKDOWN_GROUPS, Pattern.MULTILINE) }
 
@@ -46,7 +58,7 @@ object MarkdownParser {
         val matcher = elementsPattern.matcher(string)
         var lastStartIndex = 0
 
-        loop@while(matcher.find(lastStartIndex)) {
+        loop@ while (matcher.find(lastStartIndex)) {
             val startIndex = matcher.start()
             val endIndex = matcher.end()
 
@@ -56,7 +68,7 @@ object MarkdownParser {
 
             var text: CharSequence
 
-            var groups = 1..9
+            var groups = 1..10
 
             var group = -1
 
@@ -146,9 +158,21 @@ object MarkdownParser {
                 // LINK
                 9 -> {
                     text = string.subSequence(startIndex, endIndex)
-                    var (title: String, link: String) = "\\[(.*)]\\((.*)\\)".toRegex().find(text)!!.destructured
+                    var (title: String, link: String) = "\\[(.*)]\\((.*)\\)".toRegex()
+                        .find(text)!!.destructured
                     val element = Element.Link(link, title)
                     parents.add(element)
+                    lastStartIndex = endIndex
+                }
+
+                // ORDERED LIST
+                10 -> {
+                    val reg = "^\\d{1,2}".toRegex().find(string.subSequence(startIndex, endIndex))
+                    val order = reg!!.value
+                    text = string.subSequence(startIndex.plus(order.length.plus(2)), endIndex)
+                    val element = Element.OrderedListItem(order, text)
+                    parents.add(element)
+
                     lastStartIndex = endIndex
                 }
             }
@@ -173,18 +197,18 @@ sealed class Element() {
     data class Text(
         override val text: CharSequence,
         override val elements: List<Element> = emptyList()
-    ): Element()
+    ) : Element()
 
     data class UnorderedListItem(
         override val text: CharSequence,
         override val elements: List<Element> = emptyList()
-    ): Element()
+    ) : Element()
 
     data class Header(
         val level: Int = 1,
         override val text: CharSequence,
         override val elements: List<Element> = emptyList()
-    ): Element()
+    ) : Element()
 
     data class Quote(
         override val text: CharSequence,

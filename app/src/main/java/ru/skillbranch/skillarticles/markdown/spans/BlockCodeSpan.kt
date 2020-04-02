@@ -19,8 +19,8 @@ class BlockCodeSpan(
     @Px
     private val cornerRadius: Float,
     @Px
-    private val padding: Float
-//    private val type: Element.BlockCode.Type
+    private val padding: Float,
+    private val type: Element.BlockCode.Type
 ) : ReplacementSpan() {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var rect = RectF()

@@ -16,6 +16,7 @@ object MarkdownParser {
     private const val INLINE_GROUP = "((?<!`)`[^`\\s].*?[^`\\s]?`(?!`))"
     private const val LINK_GROUP = "(\\[[^\\[\\]]*?]\\(.+?\\)|^\\[*?]\\(.*?\\))"
     private const val ORDERED_LIST_GROUP = "(^\\d{1,2}\\. .+?$)"
+    private const val BLOCK_CODE_GROUP = "(^```[\\s\\S]+?```$)"
 
 
     private const val MARKDOWN_GROUPS =
@@ -28,7 +29,8 @@ object MarkdownParser {
                 "$RULE_GROUP|" +
                 "$INLINE_GROUP|" +
                 "$LINK_GROUP|" +
-                "$ORDERED_LIST_GROUP"
+                "$ORDERED_LIST_GROUP|" +
+                "$BLOCK_CODE_GROUP"
 
     private val elementsPattern by lazy { Pattern.compile(MARKDOWN_GROUPS, Pattern.MULTILINE) }
 
@@ -68,7 +70,7 @@ object MarkdownParser {
 
             var text: CharSequence
 
-            var groups = 1..10
+            var groups = 1..11
 
             var group = -1
 
@@ -172,6 +174,31 @@ object MarkdownParser {
                     text = string.subSequence(startIndex.plus(order.length.inc()), endIndex)
                     val element = Element.OrderedListItem(order, text)
                     parents.add(element)
+
+                    lastStartIndex = endIndex
+                }
+
+                // BLOCK CODE
+                11 -> {
+                    text = string.subSequence(startIndex.plus(3), endIndex.minus(3))
+                    val lines = text.split(LINE_SEPARATOR)
+                    lines.forEachIndexed { index, s ->
+                        var type = Element.BlockCode.Type.MIDDLE
+                        var lineText = s
+                        if (index == 0) {
+                            if (lines.size == 1) {
+                                type = Element.BlockCode.Type.SINGLE
+                            } else {
+                                type = Element.BlockCode.Type.START
+                            }
+                        } else if (index == lines.lastIndex) {
+                            type = Element.BlockCode.Type.END
+                        }
+                        if (lines.size > 1 && type != Element.BlockCode.Type.END) {
+                            lineText = "$lineText\n"
+                        }
+                        parents.add(Element.BlockCode(type, lineText))
+                    }
 
                     lastStartIndex = endIndex
                 }

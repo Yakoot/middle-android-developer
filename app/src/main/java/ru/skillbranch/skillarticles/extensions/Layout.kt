@@ -7,7 +7,7 @@ fun Layout.getLineHeight(line: Int): Int {
     return getLineTop(line.inc()) - getLineTop(line)
 }
 
-fun Layout.getLineBottomWithoutPadding(line: Int): Int {
+fun Layout.getLineTopWithoutPadding(line: Int): Int {
     var lineTop = getLineTop(line)
     if (line == 0) {
         lineTop -= topPadding
@@ -15,7 +15,7 @@ fun Layout.getLineBottomWithoutPadding(line: Int): Int {
     return lineTop
 }
 
-fun Layout.getLineTopWithoutPadding(line: Int): Int {
+fun Layout.getLineBottomWithoutPadding(line: Int): Int {
     var lineBottom = getLineBottomWithoutSpacing(line)
     if (line == lineCount.dec()) {
         lineBottom -= bottomPadding

@@ -183,10 +183,10 @@ class MarkdownContentView @JvmOverloads constructor(
 
     override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>?) {
         Log.e("MarkdownContentView", "dispatchSaveInstanceState: $childCount");
-//        children.filter { it !is MarkdownTextView }
-//            .forEachIndexed { index, view ->
-//                layoutManager.attachToParent(view, index)
-//            }
+        children.filter { it !is MarkdownTextView }
+            .forEachIndexed { index, view ->
+                layoutManager.attachToParent(view, index)
+            }
         children.filter { it !is MarkdownTextView }
             .forEach {
                 if (it !is MarkdownTextView) it.saveHierarchyState(layoutManager.container)

@@ -15,8 +15,8 @@ abstract class BaseFragment<T : BaseViewModel<out IViewModelState>> : Fragment()
     protected abstract val viewModel: T
     protected abstract val layout: Int
 
-//    open val prepareToolbar: (ToolbarBuilder.() -> Unit)? = null
-//    open val prepareBottombar: (BottombarBuilder.() -> Unit)? = null
+    open val prepareToolbar: (ToolbarBuilder.() -> Unit)? = null
+    open val prepareBottombar: (BottombarBuilder.() -> Unit)? = null
 
     val toolbar
         get() = root.toolbar
@@ -35,15 +35,15 @@ abstract class BaseFragment<T : BaseViewModel<out IViewModelState>> : Fragment()
         super.onViewCreated(view, savedInstanceState)
 
         //prepare toolbar
-//        root.toolbarBuilder
-//            .invalidate()
-//            .prepare(prepareToolbar)
-//            .build(root)
+        root.toolbarBuilder
+            .invalidate()
+            .prepare(prepareToolbar)
+            .build(root)
 
-//        root.bottombarBuilder
-//            .invalidate()
-//            .prepare(prepareBottombar)
-//            .build(root)
+        root.bottombarBuilder
+            .invalidate()
+            .prepare(prepareBottombar)
+            .build(root)
 
         //restore state
         viewModel.restoreState()
@@ -55,7 +55,7 @@ abstract class BaseFragment<T : BaseViewModel<out IViewModelState>> : Fragment()
         if (binding?.isInflated == false) binding?.onFinishInflate()
 
         viewModel.observeNotifications(viewLifecycleOwner) { root.renderNotification(it) }
-//        viewModel.observeNavigation(viewLifecycleOwner) { root.viewModel.navigate(it) }
+        viewModel.observeNavigation(viewLifecycleOwner) { root.viewModel.navigate(it) }
 
         setupViews()
     }
@@ -71,20 +71,20 @@ abstract class BaseFragment<T : BaseViewModel<out IViewModelState>> : Fragment()
         super.onSaveInstanceState(outState)
     }
 
-//    override fun onPrepareOptionsMenu(menu: Menu) {
-//        if (root.toolbarBuilder.items.isNotEmpty()) {
-//            for ((index, menuHolder) in root.toolbarBuilder.items.withIndex()) {
-//                val item = menu.add(0, menuHolder.menuId, index, menuHolder.title)
-//                item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
-//                    .setIcon(menuHolder.icon)
-//                    .setOnMenuItemClickListener {
-//                        menuHolder.clickListener?.invoke(it)?.let { true } ?: false
-//                    }
-//
-//                if (menuHolder.actionViewLayout != null) item.setActionView(menuHolder.actionViewLayout)
-//            }
-//        } else menu.clear()
-//        super.onPrepareOptionsMenu(menu)
-//    }
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        if (root.toolbarBuilder.items.isNotEmpty()) {
+            for ((index, menuHolder) in root.toolbarBuilder.items.withIndex()) {
+                val item = menu.add(0, menuHolder.menuId, index, menuHolder.title)
+                item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
+                    .setIcon(menuHolder.icon)
+                    .setOnMenuItemClickListener {
+                        menuHolder.clickListener?.invoke(it)?.let { true } ?: false
+                    }
+
+                if (menuHolder.actionViewLayout != null) item.setActionView(menuHolder.actionViewLayout)
+            }
+        } else menu.clear()
+        super.onPrepareOptionsMenu(menu)
+    }
 
 }

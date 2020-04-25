@@ -99,7 +99,7 @@ object LocalDataHolder {
                 ),
                 article.copy(
                     id = "5",
-                    title = " Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0",
+                    title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Blandit aliquam etiam erat velit scelerisque in dictum non consectetur.",
                     description = "Initialization, passing arguments, and saved state",
                     author = "Adam Hurwitz",
                     authorAvatar = "https://miro.medium.com/fit/c/96/96/2*0yEmon3hJKcxVIXjSJeR3Q.jpeg",

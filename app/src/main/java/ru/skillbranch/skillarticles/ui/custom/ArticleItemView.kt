@@ -2,12 +2,15 @@ package ru.skillbranch.skillarticles.ui.custom
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.ColorFilter
 import android.graphics.Typeface
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.VisibleForTesting
+import androidx.constraintlayout.widget.Barrier
 import androidx.core.view.setPadding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -103,6 +106,8 @@ class ArticleItemView (context: Context) : ViewGroup(context, null, 0) {
         iv_likes = ImageView(context).apply {
             layoutParams = LayoutParams(bottomIconSize, bottomIconSize)
             id = R.id.iv_likes
+            setImageResource(R.drawable.ic_favorite_black_24dp)
+            imageTintList = ColorStateList.valueOf(colorGray)
         }
         addView(iv_likes)
 
@@ -116,6 +121,8 @@ class ArticleItemView (context: Context) : ViewGroup(context, null, 0) {
         iv_comments = ImageView(context).apply {
             layoutParams = LayoutParams(bottomIconSize, bottomIconSize)
             id = R.id.iv_comments
+            setImageResource(R.drawable.ic_insert_comment_black_24dp)
+            imageTintList = ColorStateList.valueOf(colorGray)
         }
         addView(iv_comments)
 
@@ -137,6 +144,8 @@ class ArticleItemView (context: Context) : ViewGroup(context, null, 0) {
         iv_bookmark = ImageView(context).apply {
             layoutParams = LayoutParams(bottomIconSize, bottomIconSize)
             id = R.id.iv_bookmark
+            setImageResource(R.drawable.bookmark_states)
+            imageTintList = ColorStateList.valueOf(colorGray)
         }
         addView(iv_bookmark)
     }
@@ -167,24 +176,38 @@ class ArticleItemView (context: Context) : ViewGroup(context, null, 0) {
     public override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var usedHeight = paddingTop
         val width = getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
+        val contentWidth = width - paddingLeft - paddingRight
 
         // first line
         measureChild(tv_date, widthMeasureSpec, heightMeasureSpec)
-        tv_author.maxWidth = width - tv_date.width - basePadding * 3
+        tv_author.maxWidth = contentWidth - tv_date.width - basePadding
         measureChild(tv_author, widthMeasureSpec, heightMeasureSpec)
-        usedHeight += tv_date.height
+        usedHeight += tv_date.measuredHeight
         usedHeight += baseMargin
 
         // 2nd line
-        tv_title.maxWidth = width - posterSize - categorySize / 2 - basePadding * 2 - baseMargin / 2
+        tv_title.maxWidth = contentWidth - imagesSize - baseMargin / 2
         measureChild(tv_title, widthMeasureSpec, heightMeasureSpec)
 
 
         usedHeight += max(tv_title.measuredHeight, imagesSize)
+        usedHeight += baseMargin
 
+        // 3rd line
+        measureChild(tv_description, widthMeasureSpec, heightMeasureSpec)
+        usedHeight +=  tv_description.measuredHeight
+        usedHeight += baseMargin
 
+        // 4th line
+//        measureChild(iv_likes, widthMeasureSpec, heightMeasureSpec)
+        measureChild(tv_likes_count, widthMeasureSpec, heightMeasureSpec)
+//        measureChild(iv_comments, widthMeasureSpec, heightMeasureSpec)
+        measureChild(tv_comments_count, widthMeasureSpec, heightMeasureSpec)
+        tv_read_duration.maxWidth = contentWidth - bottomIconSize * 3 - baseMargin * 8
+        measureChild(tv_read_duration, widthMeasureSpec, heightMeasureSpec)
+//        measureChild(iv_bookmark, widthMeasureSpec, heightMeasureSpec)
 
-
+        usedHeight += tv_read_duration.measuredHeight
 
         usedHeight += paddingBottom
         setMeasuredDimension(width, usedHeight)
@@ -193,45 +216,44 @@ class ArticleItemView (context: Context) : ViewGroup(context, null, 0) {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         var usedHeight = paddingTop
-        var currentLeftPosition = paddingLeft
         val bodyWidth = r - l - paddingLeft - paddingRight
-        val left = paddingLeft
+        var left = paddingLeft
         val right = paddingLeft + bodyWidth
 
         // first line (author + date)
         tv_date.layout(
-            currentLeftPosition,
+            left,
             usedHeight,
-            currentLeftPosition + tv_date.measuredWidth,
+            left + tv_date.measuredWidth,
             usedHeight + tv_date.measuredHeight
         )
-        currentLeftPosition += tv_date.measuredWidth + basePadding
+        left += tv_date.measuredWidth + basePadding
 
         tv_author.layout(
-            currentLeftPosition,
+            left,
             usedHeight,
-            currentLeftPosition + tv_author.measuredWidth,
+            left + tv_author.measuredWidth,
             usedHeight + tv_author.measuredHeight
         )
 
         usedHeight += tv_author.measuredHeight
         usedHeight += baseMargin
-        currentLeftPosition = paddingLeft
+        left = paddingLeft
 
         // 2nd line
-        val sizeDiff = abs(imagesSize - tv_title.measuredHeight)
+        val sizeDiff = abs(imagesSize - tv_title.measuredHeight) / 2
         if (imagesSize > tv_title.measuredHeight) {
             tv_title.layout(
-                currentLeftPosition,
-                usedHeight + sizeDiff / 2,
-                currentLeftPosition + tv_title.measuredWidth,
-                usedHeight + tv_title.measuredHeight + sizeDiff / 2
+                left,
+                usedHeight + sizeDiff,
+                left + tv_title.measuredWidth,
+                usedHeight + tv_title.measuredHeight + sizeDiff
             )
             iv_poster.layout(
                 right - posterSize,
                 usedHeight,
                 right,
-                usedHeight + imagesSize - categorySize / 2
+                usedHeight + posterSize
             )
             iv_category.layout(
                 right - imagesSize,
@@ -242,28 +264,84 @@ class ArticleItemView (context: Context) : ViewGroup(context, null, 0) {
 
         } else {
             tv_title.layout(
-                currentLeftPosition,
-                usedHeight + sizeDiff / 2,
-                currentLeftPosition + tv_title.measuredWidth,
-                usedHeight + tv_title.measuredHeight + sizeDiff / 2
+                left,
+                usedHeight,
+                left + tv_title.measuredWidth,
+                usedHeight + tv_title.measuredHeight
             )
             iv_poster.layout(
                 right - posterSize,
-                usedHeight,
+                usedHeight + sizeDiff,
                 right,
-                usedHeight + imagesSize - categorySize / 2
+                usedHeight + sizeDiff + posterSize
             )
             iv_category.layout(
                 right - imagesSize,
-                usedHeight - posterSize - categorySize / 2,
+                usedHeight + sizeDiff + posterSize - categorySize / 2,
                 right - posterSize + categorySize / 2,
-                usedHeight + imagesSize
+                usedHeight + imagesSize + sizeDiff
             )
         }
 
+        usedHeight += max(tv_title.measuredHeight, imagesSize)
         usedHeight += baseMargin
 
+        // 3rd line
+        tv_description.layout(
+            left,
+            usedHeight,
+            right,
+            usedHeight + tv_description.measuredHeight
+        )
 
+        usedHeight += tv_description.measuredHeight
+        usedHeight += baseMargin
 
+        // 4th line
+        iv_likes.layout(
+            left,
+            usedHeight,
+            left + bottomIconSize,
+            usedHeight + bottomIconSize
+        )
+        left += bottomIconSize + baseMargin
+
+        tv_likes_count.layout(
+            left,
+            usedHeight,
+            left + tv_likes_count.measuredWidth,
+            usedHeight + tv_likes_count.measuredHeight
+        )
+        left += bottomIconSize + tv_likes_count.measuredWidth + baseMargin * 2
+
+        iv_comments.layout(
+            left,
+            usedHeight,
+            left + bottomIconSize,
+            usedHeight + bottomIconSize
+        )
+        left += bottomIconSize + baseMargin
+
+        tv_comments_count.layout(
+            left,
+            usedHeight,
+            left + tv_comments_count.measuredWidth,
+            usedHeight + tv_comments_count.measuredHeight
+        )
+        left += bottomIconSize + tv_comments_count.measuredWidth + baseMargin * 2
+
+        tv_read_duration.layout(
+            left,
+            usedHeight,
+            left + tv_read_duration.measuredWidth,
+            usedHeight + tv_read_duration.measuredHeight
+        )
+
+        iv_bookmark.layout(
+            right - bottomIconSize,
+            usedHeight,
+            right,
+            usedHeight + bottomIconSize
+        )
     }
 }

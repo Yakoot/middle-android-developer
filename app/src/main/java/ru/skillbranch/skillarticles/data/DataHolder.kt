@@ -96,6 +96,14 @@ object LocalDataHolder {
                     author = "Adam Hurwitz",
                     authorAvatar = "https://miro.medium.com/fit/c/96/96/2*0yEmon3hJKcxVIXjSJeR3Q.jpeg",
                     poster = "https://miro.medium.com/max/4011/1*voHEHCw6ZWrWGMmZ_xtpBQ.png"
+                ),
+                article.copy(
+                    id = "5",
+                    title = " Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0 Optimizing Android ViewModel with Lifecycle 2.2.0",
+                    description = "Initialization, passing arguments, and saved state",
+                    author = "Adam Hurwitz",
+                    authorAvatar = "https://miro.medium.com/fit/c/96/96/2*0yEmon3hJKcxVIXjSJeR3Q.jpeg",
+                    poster = "https://miro.medium.com/max/4011/1*voHEHCw6ZWrWGMmZ_xtpBQ.png"
                 )
             )
         )

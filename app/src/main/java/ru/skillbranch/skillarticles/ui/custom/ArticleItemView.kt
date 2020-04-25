@@ -16,6 +16,7 @@ import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.ArticleItemData
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.format
+import kotlin.math.abs
 import kotlin.math.max
 
 @SuppressLint("ViewConstructor")
@@ -45,6 +46,7 @@ class ArticleItemView (context: Context) : ViewGroup(context, null, 0) {
     private val basePadding = context.dpToIntPx(16)
     private val posterSize = context.dpToIntPx(64)
     private val categorySize = context.dpToIntPx(40)
+    private val imagesSize = posterSize + categorySize / 2
     private val bottomIconSize = context.dpToIntPx(16)
     private val cornerRadius = context.dpToIntPx(8)
     private val baseMargin = context.dpToIntPx(8)
@@ -171,7 +173,14 @@ class ArticleItemView (context: Context) : ViewGroup(context, null, 0) {
         tv_author.maxWidth = width - tv_date.width - basePadding * 3
         measureChild(tv_author, widthMeasureSpec, heightMeasureSpec)
         usedHeight += tv_date.height
+        usedHeight += baseMargin
 
+        // 2nd line
+        tv_title.maxWidth = width - posterSize - categorySize / 2 - basePadding * 2 - baseMargin / 2
+        measureChild(tv_title, widthMeasureSpec, heightMeasureSpec)
+
+
+        usedHeight += max(tv_title.measuredHeight, imagesSize)
 
 
 
@@ -206,6 +215,54 @@ class ArticleItemView (context: Context) : ViewGroup(context, null, 0) {
         )
 
         usedHeight += tv_author.measuredHeight
+        usedHeight += baseMargin
+        currentLeftPosition = paddingLeft
+
+        // 2nd line
+        val sizeDiff = abs(imagesSize - tv_title.measuredHeight)
+        if (imagesSize > tv_title.measuredHeight) {
+            tv_title.layout(
+                currentLeftPosition,
+                usedHeight + sizeDiff / 2,
+                currentLeftPosition + tv_title.measuredWidth,
+                usedHeight + tv_title.measuredHeight + sizeDiff / 2
+            )
+            iv_poster.layout(
+                right - posterSize,
+                usedHeight,
+                right,
+                usedHeight + imagesSize - categorySize / 2
+            )
+            iv_category.layout(
+                right - imagesSize,
+                usedHeight + posterSize - categorySize / 2,
+                right - posterSize + categorySize / 2,
+                usedHeight + imagesSize
+            )
+
+        } else {
+            tv_title.layout(
+                currentLeftPosition,
+                usedHeight + sizeDiff / 2,
+                currentLeftPosition + tv_title.measuredWidth,
+                usedHeight + tv_title.measuredHeight + sizeDiff / 2
+            )
+            iv_poster.layout(
+                right - posterSize,
+                usedHeight,
+                right,
+                usedHeight + imagesSize - categorySize / 2
+            )
+            iv_category.layout(
+                right - imagesSize,
+                usedHeight - posterSize - categorySize / 2,
+                right - posterSize + categorySize / 2,
+                usedHeight + imagesSize
+            )
+        }
+
+        usedHeight += baseMargin
+
 
 
     }

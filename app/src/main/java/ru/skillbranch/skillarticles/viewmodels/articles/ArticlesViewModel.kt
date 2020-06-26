@@ -1,19 +1,50 @@
 package ru.skillbranch.skillarticles.viewmodels.articles
 
 import androidx.lifecycle.SavedStateHandle
-import ru.skillbranch.skillarticles.data.ArticleItemData
+import androidx.lifecycle.Transformations
+import androidx.paging.DataSource
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
+import ru.skillbranch.skillarticles.data.models.ArticleItemData
 import ru.skillbranch.skillarticles.data.repositories.ArticlesRepository
 import ru.skillbranch.skillarticles.viewmodels.base.BaseViewModel
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 
 class ArticlesViewModel(handle: SavedStateHandle) : BaseViewModel<ArticlesState>(handle, ArticlesState()) {
-    val repository = ArticlesRepository
+    private val repository = ArticlesRepository
+    private val listConfig by lazy {
+        PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setPageSize(10)
+            .setPrefetchDistance(30)
+            .setInitialLoadSizeHint(50)
+            .build()
+    }
+//    private val listData = Transformations.switchMap(state) {
+//        when {
+//            it.isSearch && !it.searchQuery.isNullOrBlank() -> buildPagedList(
+//                repository.searchArticles(
+//                    it.searchQuery
+//                )
+//            )
+//            else -> buildPagedList(repository.allArticles())
+//        }
+//    }
 
     init {
         subscribeOnDataSource(repository.loadArticles()){ articles, state ->
             articles ?: return@subscribeOnDataSource null
             state.copy(articles = articles)
         }
+    }
+
+    private fun buildPagedList(
+        dataFactory: DataSource.Factory<Int, ArticleItemData>
+    ) {
+        val builder = LivePagedListBuilder<Int, ArticleItemData>(
+            dataFactory,
+            listConfig
+        )
     }
 }
 

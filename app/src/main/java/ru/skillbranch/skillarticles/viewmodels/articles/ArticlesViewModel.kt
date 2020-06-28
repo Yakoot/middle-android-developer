@@ -113,6 +113,10 @@ class ArticlesViewModel(handle: SavedStateHandle) : BaseViewModel<ArticlesState>
     fun handleSearchMode(isSearch: Boolean) {
         updateState { it.copy(isSearch = isSearch) }
     }
+
+    fun handleBookmark(articleId: String, isBookmarked: Boolean) {
+//        updateState { it.copy(isSearch = isSearch) }
+    }
 }
 
 data class ArticlesState(

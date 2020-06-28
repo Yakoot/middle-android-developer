@@ -73,7 +73,7 @@ class CommentItemView(context: Context) : ViewGroup(context, null, 0) {
         addView(tv_answer_to)
 
         iv_answer_icon = ImageView(context).apply {
-//            setImageResource(R.drawable.ic_reply_black_24dp)
+            setImageResource(R.drawable.ic_reply_black_24dp)
             imageTintList = ColorStateList.valueOf(grayColor)
             isVisible = false
         }

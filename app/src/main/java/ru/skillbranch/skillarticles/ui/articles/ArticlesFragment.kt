@@ -37,7 +37,8 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
         )
     }
 
-    private val articlesAdapter = ArticlesAdapter { item ->
+    private val articlesAdapter = ArticlesAdapter(
+        listener = { item ->
         Log.e("ArticlesFragment", "click on article: ${item.id} ")
         val action = ArticlesFragmentDirections.actionNavArticlesToPageArticle(
             item.id,
@@ -51,7 +52,11 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
         )
 
         viewModel.navigate(NavigationCommand.To(action.actionId, action.arguments))
-    }
+    },
+        bookmarkListener = { articleId, isBookmarked ->
+            viewModel.handleBookmark(articleId, isBookmarked)
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

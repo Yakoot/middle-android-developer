@@ -8,6 +8,7 @@ import androidx.paging.DataSource
 import androidx.paging.ItemKeyedDataSource
 import ru.skillbranch.skillarticles.data.*
 import ru.skillbranch.skillarticles.data.models.*
+import java.lang.Thread.sleep
 import kotlin.math.abs
 
 object ArticleRepository {

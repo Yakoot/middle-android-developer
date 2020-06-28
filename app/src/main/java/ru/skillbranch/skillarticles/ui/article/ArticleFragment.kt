@@ -13,6 +13,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -24,10 +25,7 @@ import kotlinx.android.synthetic.main.layout_bottombar.view.*
 import kotlinx.android.synthetic.main.layout_submenu.view.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
-import ru.skillbranch.skillarticles.extensions.dpToIntPx
-import ru.skillbranch.skillarticles.extensions.format
-import ru.skillbranch.skillarticles.extensions.hideKeyboard
-import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
+import ru.skillbranch.skillarticles.extensions.*
 import ru.skillbranch.skillarticles.ui.base.*
 import ru.skillbranch.skillarticles.ui.custom.ArticleSubmenu
 import ru.skillbranch.skillarticles.ui.custom.Bottombar
@@ -52,7 +50,7 @@ class ArticleFragment() : BaseFragment<ArticleViewModel>(), IArticleView {
             viewModel.handleReplyTo(it.slug, it.user.name)
             et_comment.requestFocus()
             scroll.smoothScrollTo(0, wrap_comments.top)
-//            et_comment.context.showKeyboard(et_comment)
+            et_comment.context.showKeyboard(et_comment)
         }
     }
 
@@ -131,11 +129,13 @@ class ArticleFragment() : BaseFragment<ArticleViewModel>(), IArticleView {
         }
 
         with (rv_comments) {
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(requireContext())
+            layoutManager = LinearLayoutManager(requireContext())
             adapter = commentsAdapter
         }
 
-        viewModel.observeList(viewLifecycleOwner) { commentsAdapter.submitList(it) }
+        viewModel.observeList(viewLifecycleOwner) {
+            commentsAdapter.submitList(it)
+        }
     }
 
     override fun showSearchBar() {

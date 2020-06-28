@@ -10,10 +10,13 @@ import kotlinx.android.extensions.LayoutContainer
 import ru.skillbranch.skillarticles.data.models.ArticleItemData
 import ru.skillbranch.skillarticles.ui.custom.ArticleItemView
 
-class ArticlesAdapter(private val listener: (ArticleItemData) -> Unit): PagedListAdapter<ArticleItemData, ArticleVH>(ArticleDiffCallback()) {
+class ArticlesAdapter(
+    private val listener: (ArticleItemData) -> Unit,
+    private val bookmarkListener: (String, Boolean) -> Unit
+): PagedListAdapter<ArticleItemData, ArticleVH>(ArticleDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleVH {
         val containerView = ArticleItemView(parent.context)
-        return ArticleVH(containerView)
+        return ArticleVH(containerView, bookmarkListener)
     }
 
     override fun onBindViewHolder(holder: ArticleVH, position: Int) {
@@ -22,13 +25,16 @@ class ArticlesAdapter(private val listener: (ArticleItemData) -> Unit): PagedLis
 
 }
 
-class ArticleVH(override val containerView: View): RecyclerView.ViewHolder(containerView), LayoutContainer {
+class ArticleVH(
+    override val containerView: View,
+    private val bookmarkListener: (String, Boolean) -> Unit
+): RecyclerView.ViewHolder(containerView), LayoutContainer {
     fun bind(
         item: ArticleItemData?,
         listener: (ArticleItemData) -> Unit
     ) {
-//        (containerView as ArticleItemView).bind(item!!)
-//        itemView.setOnClickListener { listener(item!!) }
+        (containerView as ArticleItemView).bind(item!!, bookmarkListener)
+        itemView.setOnClickListener { listener(item!!) }
     }
 }
 

@@ -41,6 +41,12 @@ object ArticlesRepository {
     }
 
     fun loadArticles(): LiveData<List<ArticleItemData>?> = LocalDataHolder.findArticles()
+
+    fun updateBookmark(articleId: String, isBookmarked: Boolean) {
+        val index = local.localArticleItems.indexOfFirst { it.id == articleId }
+        if (index == -1) return
+        local.localArticleItems[index] = local.localArticleItems[index].copy(isBookmark = isBookmarked)
+    }
 }
 
 class ArticlesDataFactory(val strategy: ArticleStrategy): DataSource.Factory<Int, ArticleItemData>() {

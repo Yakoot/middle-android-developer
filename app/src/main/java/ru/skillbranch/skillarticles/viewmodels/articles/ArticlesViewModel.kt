@@ -115,8 +115,8 @@ class ArticlesViewModel(handle: SavedStateHandle) : BaseViewModel<ArticlesState>
     }
 
     fun handleBookmark(articleId: String, isBookmarked: Boolean) {
-//        updateState { it.copy(isSearch = isSearch) }
-    }
+        repository.updateBookmark(articleId, isBookmarked)
+        listData.value?.dataSource?.invalidate()    }
 }
 
 data class ArticlesState(

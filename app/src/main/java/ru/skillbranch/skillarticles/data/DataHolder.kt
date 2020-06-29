@@ -50,10 +50,6 @@ object LocalDataHolder {
         isAuth.value = auth
     }
 
-    fun findArticles(): LiveData<List<ArticleItemData>?> {
-        TODO("Not yet implemented")
-    }
-
     fun incrementCommentsCount(articleId: String) {
         val old =
             localArticles[articleId]?.value ?: error("Local article with id: $articleId not found")

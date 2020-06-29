@@ -60,9 +60,7 @@ object ArticlesRepository {
         local.localArticleItems.addAll(articles)
             .apply { sleep(100) }
     }
-
-    fun loadArticles(): LiveData<List<ArticleItemData>?> = LocalDataHolder.findArticles()
-
+    
     fun updateBookmark(id: String, isChecked: Boolean) {
         val index = local.localArticleItems.indexOfFirst { it.id == id }
         if (index == -1) return

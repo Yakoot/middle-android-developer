@@ -2,7 +2,6 @@ package ru.skillbranch.skillarticles.viewmodels.articles
 
 import android.util.Log
 import androidx.lifecycle.*
-import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +16,8 @@ import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 import ru.skillbranch.skillarticles.viewmodels.base.Notify
 import java.util.concurrent.Executors
 
-class ArticlesViewModel(handle: SavedStateHandle) : BaseViewModel<ArticlesState>(handle, ArticlesState()) {
+class ArticlesViewModel(handle: SavedStateHandle) :
+    BaseViewModel<ArticlesState>(handle, ArticlesState()) {
     private val repository = ArticlesRepository
     private val listConfig by lazy {
         PagedList.Config.Builder()
@@ -48,7 +48,7 @@ class ArticlesViewModel(handle: SavedStateHandle) : BaseViewModel<ArticlesState>
     private fun buildPagedList(
         dataFactory: ArticlesDataFactory
     ): LiveData<PagedList<ArticleItemData>> {
-        val builder = LivePagedListBuilder<Int, ArticleItemData> (
+        val builder = LivePagedListBuilder<Int, ArticleItemData>(
             dataFactory,
             listConfig
         )
@@ -114,9 +114,10 @@ class ArticlesViewModel(handle: SavedStateHandle) : BaseViewModel<ArticlesState>
         updateState { it.copy(isSearch = isSearch) }
     }
 
-    fun handleBookmark(articleId: String, isBookmarked: Boolean) {
-        repository.updateBookmark(articleId, isBookmarked)
-        listData.value?.dataSource?.invalidate()    }
+    fun handleToggleBookmark(id: String, isChecked: Boolean) {
+        repository.updateBookmark(id, isChecked)
+        listData.value?.dataSource?.invalidate()
+    }
 }
 
 data class ArticlesState(
@@ -124,12 +125,12 @@ data class ArticlesState(
     val searchQuery: String? = null,
     val isLoading: Boolean = true,
     val articles: List<ArticleItemData> = emptyList()
-): IViewModelState
+) : IViewModelState
 
 class ArticlesBoundaryCallback(
     private val zeroLoadingHandle: () -> Unit,
     private val itemAtEndHandle: (ArticleItemData) -> Unit
-): PagedList.BoundaryCallback<ArticleItemData>() {
+) : PagedList.BoundaryCallback<ArticleItemData>() {
     override fun onZeroItemsLoaded() {
         // storage is empty
         zeroLoadingHandle()

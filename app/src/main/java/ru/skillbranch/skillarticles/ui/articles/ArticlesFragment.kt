@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_articles.*
 
 import ru.skillbranch.skillarticles.R
-import ru.skillbranch.skillarticles.data.models.ArticleItemData
 import ru.skillbranch.skillarticles.ui.base.BaseFragment
 import ru.skillbranch.skillarticles.ui.base.Binding
 import ru.skillbranch.skillarticles.ui.base.ToolbarBuilder
@@ -54,7 +53,7 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
         viewModel.navigate(NavigationCommand.To(action.actionId, action.arguments))
     },
         bookmarkListener = { articleId, isBookmarked ->
-            viewModel.handleBookmark(articleId, isBookmarked)
+            viewModel.handleToggleBookmark(articleId, isBookmarked)
         }
     )
 

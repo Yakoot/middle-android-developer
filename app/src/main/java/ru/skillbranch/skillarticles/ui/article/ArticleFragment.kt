@@ -115,8 +115,12 @@ class ArticleFragment() : BaseFragment<ArticleViewModel>(), IArticleView {
         et_comment.setOnEditorActionListener { view, _, _ ->
             root.hideKeyboard(view)
             viewModel.handleSendComment(view.text.toString())
-            view.text = null
-            view.clearFocus()
+
+            if (viewModel.currentState.isAuth) {
+                view.text = null
+                view.clearFocus()
+            }
+
             true
         }
 
@@ -298,6 +302,9 @@ class ArticleFragment() : BaseFragment<ArticleViewModel>(), IArticleView {
             if (submenu.isOpen) submenu.isVisible = it
         }
 
+        private var commentText by RenderProp("") {
+            et_comment.setText(it)
+        }
 
         override val afterInflated: (() -> Unit)? = {
             dependsOn<Boolean, Boolean, List<Pair<Int, Int>>, Int>(
@@ -335,6 +342,7 @@ class ArticleFragment() : BaseFragment<ArticleViewModel>(), IArticleView {
             searchResults = data.searchResults
             answerTo = data.answerTo ?: "Comment"
             isShowBottombar = data.showBottomBar
+            commentText = data.commentText ?: ""
         }
 
         override fun saveUi(outState: Bundle) {

@@ -1,31 +1,22 @@
 package ru.skillbranch.skillarticles.ui.articles
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.fragment_article.*
-import kotlinx.android.synthetic.main.item_article.*
-import kotlinx.android.synthetic.main.item_article.iv_poster
-import kotlinx.android.synthetic.main.item_article.tv_author
-import kotlinx.android.synthetic.main.item_article.tv_date
-import kotlinx.android.synthetic.main.item_article.tv_title
-import ru.skillbranch.skillarticles.R
-import ru.skillbranch.skillarticles.data.ArticleItemData
-import ru.skillbranch.skillarticles.extensions.dpToIntPx
-import ru.skillbranch.skillarticles.extensions.format
+import ru.skillbranch.skillarticles.data.models.ArticleItemData
 import ru.skillbranch.skillarticles.ui.custom.ArticleItemView
 
-class ArticlesAdapter(private val listener: (ArticleItemData) -> Unit): ListAdapter<ArticleItemData, ArticleVH>(ArticleDiffCallback()) {
+class ArticlesAdapter(
+    private val listener: (ArticleItemData) -> Unit,
+    private val bookmarkListener: (String, Boolean) -> Unit
+): PagedListAdapter<ArticleItemData, ArticleVH>(ArticleDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleVH {
         val containerView = ArticleItemView(parent.context)
-        return ArticleVH(containerView)
+        return ArticleVH(containerView, bookmarkListener)
     }
 
     override fun onBindViewHolder(holder: ArticleVH, position: Int) {
@@ -34,13 +25,16 @@ class ArticlesAdapter(private val listener: (ArticleItemData) -> Unit): ListAdap
 
 }
 
-class ArticleVH(override val containerView: View): RecyclerView.ViewHolder(containerView), LayoutContainer {
+class ArticleVH(
+    override val containerView: View,
+    private val bookmarkListener: (String, Boolean) -> Unit
+): RecyclerView.ViewHolder(containerView), LayoutContainer {
     fun bind(
-        item: ArticleItemData,
+        item: ArticleItemData?,
         listener: (ArticleItemData) -> Unit
     ) {
-        (containerView as ArticleItemView).bind(item)
-        itemView.setOnClickListener { listener(item) }
+        (containerView as ArticleItemView).bind(item!!, bookmarkListener)
+        itemView.setOnClickListener { listener(item!!) }
     }
 }
 

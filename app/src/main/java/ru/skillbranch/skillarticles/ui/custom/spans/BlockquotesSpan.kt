@@ -40,10 +40,13 @@ class BlockquotesSpan(
         val oldColor = color
         val oldStyle = style
         val oldWidth = strokeWidth
+
         color = lineColor
-        strokeWidth = quoteWidth
         style = Paint.Style.STROKE
+        strokeWidth = quoteWidth
+
         block()
+
         color = oldColor
         style = oldStyle
         strokeWidth = oldWidth

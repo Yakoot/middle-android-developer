@@ -16,9 +16,8 @@ interface IMarkdownView {
     ) {
         clearSearchResult()
         val offsetResult = results
-            .map { (start, end) ->
-                start.minus(offset) to end.minus(offset)
-            }
+            .map{(start, end) -> start.minus(offset) to end.minus(offset)}
+
         try {
             offsetResult.forEach { (start, end) ->
                 spannableContent.setSpan(
@@ -29,6 +28,7 @@ interface IMarkdownView {
                 )
             }
         } catch (e: Exception) {
+
         }
     }
 
@@ -37,6 +37,7 @@ interface IMarkdownView {
         offset: Int
     ){
         spannableContent.getSpans<SearchFocusSpan>().forEach { spannableContent.removeSpan(it) }
+
         spannableContent.setSpan(
             SearchFocusSpan(),
             searchPosition.first.minus(offset),

@@ -29,6 +29,7 @@ object ArticlesRepository {
         .drop(start)
         .take(size)
 
+
     private fun findBookmarkArticlesByRange(start: Int, size: Int) = local.localArticleItems
         .filter { it.isBookmark }
         .drop(start)
@@ -50,15 +51,16 @@ object ArticlesRepository {
             .take(size)
             .toList()
 
+
     fun loadArticlesFromNetwork(start: Int, size: Int): List<ArticleItemData> =
         network.networkArticleItems
             .drop(start)
             .take(size)
-            .apply { sleep(500) }
+            .apply { sleep(2000) }
 
     fun insertArticlesToDb(articles: List<ArticleItemData>) {
         local.localArticleItems.addAll(articles)
-            .apply { sleep(100) }
+            .apply { sleep(2000) }
     }
     
     fun updateBookmark(id: String, isChecked: Boolean) {

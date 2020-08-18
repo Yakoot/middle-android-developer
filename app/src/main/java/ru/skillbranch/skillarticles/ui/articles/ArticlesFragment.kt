@@ -1,9 +1,11 @@
 package ru.skillbranch.skillarticles.ui.articles
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -110,6 +112,7 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
         viewModel.observeList(viewLifecycleOwner) {
+            viewModel.handleLoading(false)
             articlesAdapter.submitList(it)
         }
     }
@@ -119,7 +122,15 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
         var searchQuery: String? = null
         var isSearch: Boolean = false
         var isLoading: Boolean by RenderProp(true) {
-            // TODO show shimmer here
+            if (isLoading) {
+                shimmer.visibility = View.VISIBLE
+                rv_articles.visibility = View.GONE
+                shimmer.startShimmer()
+            } else {
+                shimmer.visibility = View.GONE
+                rv_articles.visibility = View.VISIBLE
+                shimmer.stopShimmer()
+            }
         }
 
         override fun bind(data: IViewModelState) {

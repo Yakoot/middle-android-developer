@@ -118,6 +118,10 @@ class ArticlesViewModel(handle: SavedStateHandle) :
         repository.updateBookmark(id, isChecked)
         listData.value?.dataSource?.invalidate()
     }
+
+    fun handleLoading(isLoading: Boolean) {
+//        updateState { it.copy(isLoading = isLoading) }
+    }
 }
 
 data class ArticlesState(

@@ -132,7 +132,9 @@ data class ArticlesState(
     val isSearch: Boolean = false,
     val searchQuery: String? = null,
     val isLoading: Boolean = true,
-    val isBookmark: Boolean = false
+    val isBookmark: Boolean = false,
+    val isHashtagSearch: Boolean = false,
+    val selectedCategories: List<String> = emptyList()
 ) : IViewModelState
 
 

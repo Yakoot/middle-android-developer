@@ -3,10 +3,11 @@ package ru.skillbranch.skillarticles.data.local.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
+import ru.skillbranch.skillarticles.data.local.entities.Category
 import ru.skillbranch.skillarticles.data.local.entities.CategoryData
 
 @Dao
-interface CategoriesDao {
+interface CategoriesDao: BaseDao<Category> {
     @Query("""
         SELECT category.title AS title, category.icon, category.category_id AS category_id, COUNT(article.category_id) AS articles_count
         FROM article_categories AS category

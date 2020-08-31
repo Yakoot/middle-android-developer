@@ -11,7 +11,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.cursoradapter.widget.CursorAdapter
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -67,12 +66,12 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
     private val articlesAdapter = ArticlesAdapter { item, isToggleBookmark ->
 
         if (isToggleBookmark) {
-            viewModel.handleToggleBookmark(item.id, item.isBookmark)
+            viewModel.handleToggleBookmark(item.id)
         } else {
             val action = ArticlesFragmentDirections.actionToPageArticle(
                 item.id,
                 item.author,
-                item.authorAvatar,
+                item.authorAvatar!!,
                 item.category,
                 item.categoryIcon,
                 item.poster,

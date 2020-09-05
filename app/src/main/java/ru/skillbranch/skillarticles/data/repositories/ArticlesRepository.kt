@@ -3,27 +3,23 @@ package ru.skillbranch.skillarticles.data.repositories
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
-import androidx.paging.PositionalDataSource
 import androidx.sqlite.db.SimpleSQLiteQuery
-import ru.skillbranch.skillarticles.data.LocalDataHolder
 import ru.skillbranch.skillarticles.data.NetworkDataHolder
-import ru.skillbranch.skillarticles.data.local.DbManager
 import ru.skillbranch.skillarticles.data.local.DbManager.db
-import ru.skillbranch.skillarticles.data.local.PrefManager
 import ru.skillbranch.skillarticles.data.local.dao.*
 import ru.skillbranch.skillarticles.data.local.entities.ArticleItem
 import ru.skillbranch.skillarticles.data.local.entities.ArticleTagXRef
 import ru.skillbranch.skillarticles.data.local.entities.CategoryData
 import ru.skillbranch.skillarticles.data.local.entities.Tag
-import ru.skillbranch.skillarticles.data.models.ArticleItemData
 import ru.skillbranch.skillarticles.data.remote.res.ArticleRes
-import java.lang.Thread.sleep
+import ru.skillbranch.skillarticles.extensions.data.toArticle
+import ru.skillbranch.skillarticles.extensions.data.toArticleCounts
 
 interface IArticlesRepository {
     fun loadArticlesFromNetwork(start: Int = 0, size: Int): List<ArticleRes>
     fun insertArticlesToDb(articles: List<ArticleRes>)
     fun toggleBookmark(articleId: String)
-    fun findTags(): LiveData<List<String»
+    fun findTags(): LiveData<List<String>>
     fun findCategoriesData(): LiveData<List<CategoryData>>
     fun rawQueryArticles(filter: ArticleFilter): DataSource.Factory<Int, ArticleItem>
     fun incrementTagUseCount(tag: String)
@@ -53,9 +49,8 @@ object ArticlesRepository: IArticlesRepository {
         this.articlePersonalDao = articlePersonalDao
     }
 
-    override fun loadArticlesFromNetwork(start: Int, size: Int): List<ArticleRes> {
+    override fun loadArticlesFromNetwork(start: Int, size: Int): List<ArticleRes> =
         network.findArticlesItem(start, size)
-    }
 
     override fun insertArticlesToDb(articles: List<ArticleRes>) {
         articlesDao.upsert(articles.map { it.data.toArticle() })
@@ -96,6 +91,8 @@ object ArticlesRepository: IArticlesRepository {
         tagsDao.incrementTagUseCount(tag)
     }
 }
+
+
 
 class ArticleFilter(
     private val search: String? = null,

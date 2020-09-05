@@ -1,12 +1,14 @@
 package ru.skillbranch.skillarticles.data.local.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import ru.skillbranch.skillarticles.data.local.entities.ArticlePersonalInfo
 
 @Dao
-interface ArticlePersonalInfosDao: BaseDao<ArticlePersonalInfo> {
+interface ArticlePersonalInfosDao : BaseDao<ArticlePersonalInfo> {
+
     @Transaction
     fun upsert(list: List<ArticlePersonalInfo>) {
         insert(list)

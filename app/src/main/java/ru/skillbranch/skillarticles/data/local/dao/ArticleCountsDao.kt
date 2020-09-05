@@ -7,7 +7,8 @@ import androidx.room.Transaction
 import ru.skillbranch.skillarticles.data.local.entities.ArticleCounts
 
 @Dao
-interface ArticleCountsDao: BaseDao<ArticleCounts> {
+interface ArticleCountsDao : BaseDao<ArticleCounts> {
+
     @Transaction
     fun upsert(list: List<ArticleCounts>) {
         insert(list)
@@ -41,11 +42,11 @@ interface ArticleCountsDao: BaseDao<ArticleCounts> {
 
     @Query(
         """
-            UPDATE article_counts SET comments = comments + 1, updated_at = CURRENT_TIMESTAMP
+            UPDATE article_counts SET comments = comments+1, updated_at = CURRENT_TIMESTAMP
             WHERE article_id = :articleId
         """
     )
-    fun incrementCommentsCount(articleId: String): Int
+    fun incrementCommentsCount(articleId: String)
 
     @Query(
         """
@@ -54,4 +55,5 @@ interface ArticleCountsDao: BaseDao<ArticleCounts> {
         """
     )
     fun getCommentsCount(articleId: String): LiveData<Int>
+
 }

@@ -53,7 +53,7 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
                 null
             ) { _ ->
                 val action = ArticlesFragmentDirections.choseCategory(
-                    binding.selectCategories.toTypedArray(),
+                    binding.selectedCategories.toTypedArray(),
                     binding.categories.toTypedArray()
                 )
                 viewModel.navigate(NavigationCommand.To(action.actionId, action.arguments))
@@ -197,7 +197,7 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
     inner class ArticlesBinding : Binding() {
         var categories: List<CategoryData> = emptyList()
         var selectedCategories: List<String> by RenderProp(emptyList()) {
-            // TODO selected color on icon
+            //TODO selected color on icon
         }
         var searchQuery: String? = null
         var isSearch: Boolean = false

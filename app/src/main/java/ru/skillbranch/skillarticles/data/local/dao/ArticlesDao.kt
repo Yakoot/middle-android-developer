@@ -2,17 +2,15 @@ package ru.skillbranch.skillarticles.data.local.dao
 
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.RawQuery
-import androidx.room.Transaction
+import androidx.room.*
 import androidx.sqlite.db.SimpleSQLiteQuery
 import ru.skillbranch.skillarticles.data.local.entities.Article
 import ru.skillbranch.skillarticles.data.local.entities.ArticleFull
 import ru.skillbranch.skillarticles.data.local.entities.ArticleItem
 
 @Dao
-interface ArticlesDao: BaseDao<Article> {
+interface ArticlesDao : BaseDao<Article> {
+
     @Transaction
     fun upsert(list: List<Article>) {
         insert(list)
@@ -70,4 +68,5 @@ interface ArticlesDao: BaseDao<Article> {
         """
     )
     fun findFullArticle(articleId: String): LiveData<ArticleFull>
+
 }

@@ -4,7 +4,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
 
-interface BaseDao<T: Any> {
+interface BaseDao<T : Any> {
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(list: List<T>): List<Long>
 
@@ -16,4 +17,5 @@ interface BaseDao<T: Any> {
 
     @Update
     fun update(obj: T)
+
 }

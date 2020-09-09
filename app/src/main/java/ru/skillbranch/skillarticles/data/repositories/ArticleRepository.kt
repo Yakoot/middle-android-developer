@@ -65,11 +65,11 @@ object ArticleRepository : IArticleRepository {
         preferences.getAppSettings() //from preferences
 
     override fun toggleLike(articleId: String) {
-        articlePersonalDao.toggleLike(articleId)
+        articlePersonalDao.toggleLikeOrInsert(articleId)
     }
 
     override fun toggleBookmark(articleId: String) {
-        articlePersonalDao.toggleBookmark(articleId)
+        articlePersonalDao.toggleBookmarkOrInsert(articleId)
     }
 
     override fun updateSettings(appSettings: AppSettings) {

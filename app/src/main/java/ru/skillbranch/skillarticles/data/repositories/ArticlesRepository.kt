@@ -72,7 +72,7 @@ object ArticlesRepository: IArticlesRepository {
     }
 
     override fun toggleBookmark(articleId: String) {
-        articlePersonalDao.toggleBookmark(articleId)
+        articlePersonalDao.toggleBookmarkOrInsert(articleId)
     }
 
     override fun findTags(): LiveData<List<String>> {

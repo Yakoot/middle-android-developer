@@ -42,4 +42,19 @@ interface ArticlePersonalInfosDao : BaseDao<ArticlePersonalInfo> {
     fun toggleLikeOrInsert(articleId: String) {
         if (toggleLike(articleId) == 0) insert(ArticlePersonalInfo(articleId = articleId, isLike = true))
     }
+
+    @Query(
+        """
+            SELECT * FROM article_personal_infos
+        """
+    )
+    fun findPersonalInfos(): LiveData<List<ArticlePersonalInfo>>
+
+    @Query(
+        """
+            SELECT * FROM article_personal_infos
+            WHERE article_id = :articleId
+        """
+    )
+    fun findPersonalInfos(articleId: String): LiveData<ArticlePersonalInfo>
 }

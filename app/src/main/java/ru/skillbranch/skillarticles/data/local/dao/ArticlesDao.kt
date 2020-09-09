@@ -56,7 +56,7 @@ interface ArticlesDao : BaseDao<Article> {
             WHERE refs.t_id = :tag
         """
     )
-    fun findArticleItemsByTagId(tag: String): List<ArticleItem>
+    fun findArticleItemsByTagId(tag: String): LiveData<List<ArticleItem>>
 
     @RawQuery(observedEntities = [ArticleItem::class])
     fun findArticlesByRaw(simpleSQLiteQuery: SimpleSQLiteQuery): DataSource.Factory<Int, ArticleItem>
@@ -68,8 +68,5 @@ interface ArticlesDao : BaseDao<Article> {
         """
     )
     fun findFullArticle(articleId: String): LiveData<ArticleFull>
-//
-//    @Delete
-//    fun delete(article: Article)
 
 }

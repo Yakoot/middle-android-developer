@@ -434,7 +434,7 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
             answerTo = data.answerTo ?: "Comment"
             isShowBottombar = data.showBottomBar
             comment = data.commentText ?: ""
-            hashtags = data.hashtags
+            hashtags = data.hashtags ?: emptyList()
             source = data.source ?: ""
         }
 

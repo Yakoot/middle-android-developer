@@ -1,12 +1,17 @@
-package ru.skillbranch.coordinator.ui.custom.behaviors
+package ru.skillbranch.skillarticles.ui.custom.behaviors
 
+import android.content.Context
+import android.util.AttributeSet
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.marginRight
 import ru.skillbranch.skillarticles.ui.custom.ArticleSubmenu
 import ru.skillbranch.skillarticles.ui.custom.Bottombar
 
-class SubmenuBehavior: CoordinatorLayout.Behavior<ArticleSubmenu>() {
+
+class SubmenuBehavior() : CoordinatorLayout.Behavior<ArticleSubmenu>() {
+    constructor(context: Context, attrs: AttributeSet) : this()
+
     override fun layoutDependsOn(
         parent: CoordinatorLayout,
         child: ArticleSubmenu,
@@ -20,15 +25,15 @@ class SubmenuBehavior: CoordinatorLayout.Behavior<ArticleSubmenu>() {
         child: ArticleSubmenu,
         dependency: View
     ): Boolean {
-        return if (child.isOpen && dependency is Bottombar && dependency.translationY > 0) {
+
+        return if (child.isOpen && dependency.translationY >= 0f) {
             animate(child, dependency)
             true
         } else false
     }
 
-    private fun animate(child: ArticleSubmenu, dependency: Bottombar) {
+    private fun animate(child: View, dependency: View) {
         val fraction = dependency.translationY / dependency.height
-        val offset = (child.width + child.marginRight) * fraction
-        if (offset != child.translationX) child.translationX = offset
+        child.translationX = (child.width + child.marginRight) * fraction
     }
 }

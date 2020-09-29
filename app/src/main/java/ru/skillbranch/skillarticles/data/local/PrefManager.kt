@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.distinctUntilChanged
 import androidx.preference.PreferenceManager
 import ru.skillbranch.skillarticles.App
 import ru.skillbranch.skillarticles.data.delegates.PrefDelegate
@@ -16,21 +17,22 @@ object PrefManager {
     }
 
     var isAuth by PrefDelegate(false)
-    val isAuthLiveData: LiveData<Boolean> by PrefLiveDelegate(false, "isAuth")
+    var isDarkMode by PrefDelegate(false)
+    var isBigText by PrefDelegate(false)
 
-    private val isDarkMode: LiveData<Boolean> by PrefLiveDelegate(false)
-    private val isBigText: LiveData<Boolean> by PrefLiveDelegate(false)
+    val isAuthLive: LiveData<Boolean> by PrefLiveDelegate("isAuth", false, preferences)
     val appSettings = MediatorLiveData<AppSettings>().apply {
+        val isDarkModeLive: LiveData<Boolean> by PrefLiveDelegate("isDarkMode", false, preferences)
+        val isBigTextLive: LiveData<Boolean> by PrefLiveDelegate("isBigText", false, preferences)
+
         value = AppSettings()
-        addSource(isDarkMode) {
-            val copy = value!!.copy(isDarkMode = it)
-            if (value != copy) value = copy
+        addSource(isDarkModeLive) {
+            value = value!!.copy(isDarkMode = it)
         }
-        addSource(isBigText) {
-            val copy = value!!.copy(isBigText = it)
-            if(value != copy)  value = copy
+        addSource(isBigTextLive) {
+            value = value!!.copy(isBigText = it)
         }
-    }
+    }.distinctUntilChanged()
 
     fun clearAll() {
         preferences.edit { clear() }

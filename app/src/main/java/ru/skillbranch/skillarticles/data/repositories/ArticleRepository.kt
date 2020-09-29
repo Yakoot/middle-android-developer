@@ -2,7 +2,6 @@ package ru.skillbranch.skillarticles.data.repositories
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import androidx.paging.ItemKeyedDataSource
 import ru.skillbranch.skillarticles.data.NetworkDataHolder
@@ -86,7 +85,7 @@ object ArticleRepository : IArticleRepository {
     }
 
     override fun isAuth(): LiveData<Boolean> {
-        return preferences.isAuthLiveData
+        return preferences.isAuthLive
     }
 
     override fun loadAllComments(articleId: String, total: Int): CommentsDataFactory =

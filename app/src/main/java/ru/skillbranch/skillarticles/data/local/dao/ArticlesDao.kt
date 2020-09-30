@@ -12,7 +12,7 @@ import ru.skillbranch.skillarticles.data.local.entities.ArticleItem
 interface ArticlesDao : BaseDao<Article> {
 
     @Transaction
-    fun upsert(list: List<Article>) {
+    suspend fun upsert(list: List<Article>) {
         insert(list)
             .mapIndexed { index, recordResult -> if (recordResult == -1L) list[index] else null }
             .filterNotNull()

@@ -20,6 +20,8 @@ import java.util.concurrent.Executors
 class ArticlesViewModel(handle: SavedStateHandle) :
     BaseViewModel<ArticlesState>(handle, ArticlesState()) {
     private val repository = ArticlesRepository
+    private var isLoadingInitial = false
+    private var isLoadingAfter = false
     private val listConfig by lazy {
         PagedList.Config.Builder()
             .setEnablePlaceholders(false)
@@ -79,38 +81,26 @@ class ArticlesViewModel(handle: SavedStateHandle) :
             && !currentState.isHashtagSearch
 
     private fun itemAtEndHandle(lastLoadArticle: ArticleItem) {
+        if (isLoadingAfter) return
+        else isLoadingAfter = true
+
         viewModelScope.launch(Dispatchers.IO) {
-            val items = repository.loadArticlesFromNetwork(
-                start = lastLoadArticle.id.toInt().inc(),
+            repository.loadArticlesFromNetwork(
+                start = lastLoadArticle.id,
                 size = listConfig.pageSize
             )
-            if (items.isNotEmpty()) {
-                repository.insertArticlesToDb(items)
-            }
-
-            withContext(Dispatchers.Main) {
-                notify(
-                    Notify.TextMessage(
-                        "Load from network articles from ${items.firstOrNull()?.data?.id} " +
-                                "to ${items.lastOrNull()?.data?.id}"
-                    )
-                )
-            }
-        }
+        }.invokeOnCompletion { isLoadingAfter = false }
     }
 
     private fun zeroLoadingHandle() {
-        notify(Notify.TextMessage("Storage is empty"))
+        if (isLoadingInitial) return
+        else isLoadingInitial = true
         viewModelScope.launch(Dispatchers.IO) {
-            val items =
-                repository.loadArticlesFromNetwork(
-                    start = 0,
-                    size = listConfig.initialLoadSizeHint
-                )
-            if (items.isNotEmpty()) {
-                repository.insertArticlesToDb(items)
-            }
-        }
+            repository.loadArticlesFromNetwork(
+                start = null,
+                size = listConfig.initialLoadSizeHint
+            )
+        }.invokeOnCompletion { isLoadingInitial = false }
     }
 
     fun handleSearch(query: String?) {

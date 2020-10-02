@@ -30,7 +30,7 @@ object NetworkManager {
 
         val retrofit = Retrofit.Builder()
             .client(client)
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .baseUrl(AppConfig.BASE_URL)
             .build()
 

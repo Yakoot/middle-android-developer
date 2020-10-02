@@ -4,9 +4,7 @@ import ru.skillbranch.skillarticles.data.local.entities.Author
 import ru.skillbranch.skillarticles.data.local.entities.Category
 import ru.skillbranch.skillarticles.data.models.CommentItemData
 import ru.skillbranch.skillarticles.data.models.User
-import ru.skillbranch.skillarticles.data.remote.res.ArticleCountsRes
-import ru.skillbranch.skillarticles.data.remote.res.ArticleDataRes
-import ru.skillbranch.skillarticles.data.remote.res.ArticleRes
+import ru.skillbranch.skillarticles.data.remote.res.*
 import ru.skillbranch.skillarticles.extensions.TimeUnits
 import ru.skillbranch.skillarticles.extensions.add
 import java.util.*
@@ -23,14 +21,14 @@ object EntityGenerator {
                         date = Date().add(-index, TimeUnits.DAY),
                         title = article.title,
                         poster = article.poster,
-                        category = Category(
-                            categoryId = article.categoryId,
+                        category = CategoryRes(
+                            id = article.categoryId,
                             icon = article.categoryIcon,
                             title = article.categoryTitle
                         ),
-                        author = Author(
-                            userId = article.authorId,
-                            avatar = article.authorAvatar,
+                        author = AuthorRes(
+                            id = article.authorId,
+                            avatar = article.authorAvatar ?: "",
                             name = article.authorName
                         ),
                         tags = article.tags,
@@ -41,8 +39,9 @@ object EntityGenerator {
                         comments = 40,
                         likes = (15..100).random(),
                         readDuration = (3..10).random(),
-                        updatedAt = Date().time
-                    )
+                        updatedAt = Date()
+                    ),
+                    false
                 )
             }
 

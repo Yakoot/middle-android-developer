@@ -29,7 +29,7 @@ object NetworkMonitor {
 
                 override fun onLost(network: Network) {
                     isConnected = false
-                    isConnectedLive.postValue(afalse)
+                    isConnectedLive.postValue(false)
                     networkTypeLive.postValue(NetworkType.NONE)
                 }
 

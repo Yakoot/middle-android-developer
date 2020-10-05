@@ -7,6 +7,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.skillbranch.skillarticles.AppConfig
+import ru.skillbranch.skillarticles.data.remote.interceptors.NetworkStatusInterceptor
 import java.util.*
 
 object NetworkManager {
@@ -17,6 +18,7 @@ object NetworkManager {
         }
         //client
         val client = OkHttpClient().newBuilder()
+            .addInterceptor(NetworkStatusInterceptor())
             .addInterceptor(logging)
             .build()
 

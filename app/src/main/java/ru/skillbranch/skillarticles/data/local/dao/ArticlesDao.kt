@@ -69,4 +69,11 @@ interface ArticlesDao : BaseDao<Article> {
     )
     fun findFullArticle(articleId: String): LiveData<ArticleFull>
 
+    @Query(
+        """
+            SELECT id FROM articles ORDER BY date DESC LIMIT 1
+        """
+    )
+    fun findLastArticleId(): String?
+
 }

@@ -15,6 +15,7 @@ import ru.skillbranch.skillarticles.data.local.entities.ArticleFull
 import ru.skillbranch.skillarticles.data.models.AppSettings
 import ru.skillbranch.skillarticles.data.models.CommentItemData
 import ru.skillbranch.skillarticles.data.models.User
+import ru.skillbranch.skillarticles.data.remote.RestService
 import ru.skillbranch.skillarticles.extensions.data.toArticleContent
 import java.lang.Thread.sleep
 import kotlin.math.abs
@@ -22,16 +23,16 @@ import kotlin.math.abs
 interface IArticleRepository {
     fun findArticle(articleId: String): LiveData<ArticleFull>
     fun getAppSettings(): LiveData<AppSettings>
-    fun toggleLike(articleId: String)
-    fun toggleBookmark(articleId: String)
+    suspend fun toggleLike(articleId: String)
+    suspend fun toggleBookmark(articleId: String)
     fun isAuth(): LiveData<Boolean>
     fun loadCommentsByRange(slug: String?, size: Int, articleId: String): List<CommentItemData>
-    fun sendMessage(articleId: String, text: String, answerToSlug: String?)
+    suspend fun sendMessage(articleId: String, text: String, answerToSlug: String?)
     fun loadAllComments(articleId: String, total: Int): CommentsDataFactory
-    fun decrementLike(articleId: String)
-    fun incrementLike(articleId: String)
+    suspend fun decrementLike(articleId: String)
+    suspend fun incrementLike(articleId: String)
     fun updateSettings(copy: AppSettings)
-    fun fetchArticleContent(articleId: String)
+    suspend fun fetchArticleContent(articleId: String)
     fun findArticleCommentCount(articleId: String): LiveData<Int>
 }
 
@@ -63,11 +64,11 @@ object ArticleRepository : IArticleRepository {
     override fun getAppSettings(): LiveData<AppSettings> =
         preferences.appSettings
 
-    override fun toggleLike(articleId: String) {
+    override suspend fun toggleLike(articleId: String) {
         articlePersonalDao.toggleLikeOrInsert(articleId)
     }
 
-    override fun toggleBookmark(articleId: String) {
+    override suspend fun toggleBookmark(articleId: String) {
         articlePersonalDao.toggleBookmarkOrInsert(articleId)
     }
 
@@ -75,7 +76,7 @@ object ArticleRepository : IArticleRepository {
         preferences.updateSettings(appSettings)
     }
 
-    override fun fetchArticleContent(articleId: String) {
+    override suspend fun fetchArticleContent(articleId: String) {
         val content = network.loadArticleContent(articleId).apply { sleep(1500) }
         articleContentDao.insert(content.toArticleContent())
     }
@@ -118,15 +119,15 @@ object ArticleRepository : IArticleRepository {
     }
 
 
-    override fun decrementLike(articleId: String) {
+    override suspend fun decrementLike(articleId: String) {
         articleCountsDao.decrementLike(articleId)
     }
 
-    override fun incrementLike(articleId: String) {
+    override suspend fun incrementLike(articleId: String) {
         articleCountsDao.incrementLike(articleId)
     }
 
-    override fun sendMessage(articleId: String, text: String, answerToSlug: String?) {
+    override suspend fun sendMessage(articleId: String, text: String, answerToSlug: String?) {
         network.sendMessage(
             articleId, text, answerToSlug,
             User("777", "John Doe", "https://skill-branch.ru/img/mail/bot/android-category.png")
@@ -138,12 +139,13 @@ object ArticleRepository : IArticleRepository {
 
 
 class CommentsDataFactory(
-    private val itemProvider: (String?, Int, String) -> List<CommentItemData>,
+    private val itemProvider: RestService,
     private val articleId: String,
-    private val totalCount: Int
+    private val totalCount: Int,
+    private val errHandler: (Throwable) -> Unit
 ) : DataSource.Factory<String?, CommentItemData>() {
     override fun create(): DataSource<String?, CommentItemData> =
-        CommentsDataSource(itemProvider, articleId, totalCount)
+        CommentsDataSource(itemProvider, articleId, totalCount, errHandler)
 
 }
 

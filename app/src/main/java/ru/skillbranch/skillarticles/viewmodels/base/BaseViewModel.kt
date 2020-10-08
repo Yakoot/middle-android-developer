@@ -10,7 +10,9 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import ru.skillbranch.skillarticles.data.remote.err.ApiError
 import ru.skillbranch.skillarticles.data.remote.err.NoNetworkError
+import java.net.SocketTimeoutException
 
 abstract class BaseViewModel<T : IViewModelState>(
     private val handleState: SavedStateHandle,
@@ -129,10 +131,17 @@ abstract class BaseViewModel<T : IViewModelState>(
         compHandler: ((Throwable) -> Unit)? = null,
         block: suspend CoroutineScope.() -> Unit
     ) {
-        val errHand = CoroutineExceptionHandler { _, throwable ->
-            errHandler?.invoke(throwable) ?: when(throwable) {
+        val errHand = CoroutineExceptionHandler { _, err ->
+            errHandler?.invoke(err) ?: when(err) {
                 is NoNetworkError -> notify(Notify.TextMessage("Network is not available, check internet connection"))
-                else -> notify(Notify.ErrorMessage(throwable.message ?: "Something went wrong"))
+                is SocketTimeoutException -> notify(Notify.ActionMessage("Network timeout exception - please try again", "Retry") {
+                    launchSafety(errHandler, compHandler, block)
+                })
+                is ApiError.InternalServerError -> notify(Notify.ErrorMessage(err.message,"Retry") {
+                    launchSafety(errHandler, compHandler, block)
+                })
+                is ApiError -> Notify.ErrorMessage(err.message)
+                else -> notify(Notify.ErrorMessage(err.message ?: "Something went wrong"))
             }
         }
 

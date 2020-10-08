@@ -1,13 +1,9 @@
 package ru.skillbranch.skillarticles.data.remote
 
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
-import ru.skillbranch.skillarticles.data.remote.res.ArticleContentRes
-import ru.skillbranch.skillarticles.data.remote.res.ArticleCountsRes
-import ru.skillbranch.skillarticles.data.remote.res.ArticleRes
-import ru.skillbranch.skillarticles.data.remote.res.CommentRes
+import retrofit2.http.*
+import ru.skillbranch.skillarticles.data.remote.req.LoginReq
+import ru.skillbranch.skillarticles.data.remote.res.*
 
 interface RestService {
     @GET("articles")
@@ -28,4 +24,22 @@ interface RestService {
 
     @GET("articles/{article}/counts")
     suspend fun loadArticleCounts(@Path("article") articleId: String): ArticleCountsRes
+
+    @POST("auth/login")
+    suspend fun login(@Body loginReq: LoginReq): AuthRes
+
+    @POST("auth/login")
+    fun loginCall(@Body loginReq: LoginReq): Call<AuthRes>
+
+    @POST("articles/{article}/decrementLikes")
+    suspend fun decrementLike(
+        @Path("article") articleId: String,
+        @Header("Authorization") token: String
+    ): LikeRes
+
+    @POST("articles/{article}/incrementLikes")
+    suspend fun incrementLike(
+        @Path("article") articleId: String,
+        @Header("Authorization") token: String
+    ): LikeRes
 }

@@ -12,13 +12,11 @@ import ru.skillbranch.skillarticles.data.local.dao.ArticlePersonalInfosDao
 import ru.skillbranch.skillarticles.data.local.dao.ArticlesDao
 import ru.skillbranch.skillarticles.data.local.entities.ArticleFull
 import ru.skillbranch.skillarticles.data.models.AppSettings
-import ru.skillbranch.skillarticles.data.models.User
 import ru.skillbranch.skillarticles.data.remote.NetworkManager
 import ru.skillbranch.skillarticles.data.remote.RestService
+import ru.skillbranch.skillarticles.data.remote.req.MessageReq
 import ru.skillbranch.skillarticles.data.remote.res.CommentRes
 import ru.skillbranch.skillarticles.extensions.data.toArticleContent
-import java.lang.Thread.sleep
-import kotlin.math.abs
 
 interface IArticleRepository {
     fun findArticle(articleId: String): LiveData<ArticleFull>
@@ -105,12 +103,13 @@ object ArticleRepository : IArticleRepository {
         articleCountsDao.incrementLike(articleId)
     }
 
-    override suspend fun sendMessage(articleId: String, text: String, answerToSlug: String?) {
-//        network.sendMessage(
-//            articleId, text, answerToSlug,
-//            User("777", "John Doe", "https://skill-branch.ru/img/mail/bot/android-category.png")
-//        )
-//        articleCountsDao.incrementCommentsCount(articleId)
+    override suspend fun sendMessage(articleId: String, message: String, answerToMessageId: String?) {
+        val (_, messageCount) = network.sendMessage(
+            articleId,
+            MessageReq(message, answerToMessageId),
+            preferences.accessToken
+        )
+        articleCountsDao.incrementCommentsCount(articleId)
     }
 
     suspend fun refreshCommentsCount(articleId: String) {

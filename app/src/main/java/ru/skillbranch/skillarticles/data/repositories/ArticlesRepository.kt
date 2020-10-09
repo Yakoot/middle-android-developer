@@ -19,7 +19,6 @@ import ru.skillbranch.skillarticles.extensions.data.toCategory
 
 interface IArticlesRepository {
     suspend fun loadArticlesFromNetwork(start: String? = null, size: Int = 10): Int
-    suspend fun insertArticlesToDb(articles: List<ArticleRes>)
     suspend fun toggleBookmark(articleId: String): Boolean
     fun findTags(): LiveData<List<String>>
     fun findCategoriesData(): LiveData<List<CategoryData>>
@@ -61,7 +60,7 @@ object ArticlesRepository: IArticlesRepository {
     }
 
 
-    override suspend fun insertArticlesToDb(articles: List<ArticleRes>) {
+    private suspend fun insertArticlesToDb(articles: List<ArticleRes>) {
         articlesDao.upsert(articles.map { it.data.toArticle() })
         articleCountsDao.upsert(articles.map { it.counts.toArticleCounts() })
         val refs = articles.map { it.data }

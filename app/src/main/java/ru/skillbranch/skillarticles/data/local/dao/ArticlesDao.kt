@@ -74,6 +74,6 @@ interface ArticlesDao : BaseDao<Article> {
             SELECT id FROM articles ORDER BY date DESC LIMIT 1
         """
     )
-    fun findLastArticleId(): String?
+    suspend fun findLastArticleId(): String?
 
 }

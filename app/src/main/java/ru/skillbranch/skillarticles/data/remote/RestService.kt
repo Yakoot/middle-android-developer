@@ -3,6 +3,7 @@ package ru.skillbranch.skillarticles.data.remote
 import retrofit2.Call
 import retrofit2.http.*
 import ru.skillbranch.skillarticles.data.remote.req.LoginReq
+import ru.skillbranch.skillarticles.data.remote.req.MessageReq
 import ru.skillbranch.skillarticles.data.remote.res.*
 
 interface RestService {
@@ -21,6 +22,13 @@ interface RestService {
         @Query("last") last: String? = null,
         @Query("limit") limit: Int = 5
     ): Call<List<CommentRes>>
+
+    @POST("articles/{article}/messages")
+    suspend fun sendMessage(
+        @Path("article") articleId: String,
+        @Body message: MessageReq,
+        @Header("Authorization") token: String?
+    ): MessageRes
 
     @GET("articles/{article}/counts")
     suspend fun loadArticleCounts(@Path("article") articleId: String): ArticleCountsRes

@@ -50,6 +50,14 @@ interface ArticleCountsDao : BaseDao<ArticleCounts> {
 
     @Query(
         """
+            UPDATE article_counts SET likes = :likesCount, updated_at = CURRENT_TIMESTAMP
+            WHERE article_id = :articleId
+        """
+    )
+    suspend fun updateLike(articleId: String, likesCount: Int)
+
+    @Query(
+        """
             UPDATE article_counts SET comments = comments+1, updated_at = CURRENT_TIMESTAMP
             WHERE article_id = :articleId
         """
@@ -71,5 +79,8 @@ interface ArticleCountsDao : BaseDao<ArticleCounts> {
         """
     )
     suspend fun updateCommentsCount(articleId: String, commentsCount: Int)
+
+    @Query("SELECT * FROM article_counts WHERE article_id = :articleId")
+    suspend fun findArticlesCountsTest(articleId:String) : ArticleCounts
 
 }

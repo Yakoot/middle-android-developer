@@ -44,7 +44,8 @@ object ArticlesRepository: IArticlesRepository {
         articleCountsDao: ArticleCountsDao,
         categoriesDao: CategoriesDao,
         tagsDao: TagsDao,
-        articlePersonalDao: ArticlePersonalInfosDao
+        articlePersonalDao: ArticlePersonalInfosDao,
+        articlesContentDao: ArticleContentsDao
     ) {
         this.articlesDao = articlesDao
         this.articleCountsDao = articleCountsDao

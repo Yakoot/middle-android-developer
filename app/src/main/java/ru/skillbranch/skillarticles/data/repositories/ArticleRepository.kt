@@ -96,11 +96,31 @@ object ArticleRepository : IArticleRepository {
 
 
     override suspend fun decrementLike(articleId: String) {
-        articleCountsDao.decrementLike(articleId)
+        if (preferences.accessToken.isNullOrEmpty()) {
+            articleCountsDao.decrementLike(articleId)
+            return
+        }
+        try {
+            val res = network.decrementLike(articleId, preferences.accessToken)
+            articleCountsDao.updateLike(articleId, res.likeCount)
+        } catch (e: Throwable) {
+            articleCountsDao.decrementLike(articleId)
+            throw e
+        }
     }
 
     override suspend fun incrementLike(articleId: String) {
-        articleCountsDao.incrementLike(articleId)
+        if (preferences.accessToken.isNullOrEmpty()) {
+            articleCountsDao.incrementLike(articleId)
+            return
+        }
+        try {
+            val res = network.incrementLike(articleId, preferences.accessToken)
+            articleCountsDao.updateLike(articleId, res.likeCount)
+        } catch (e: Throwable) {
+            articleCountsDao.incrementLike(articleId)
+            throw e
+        }
     }
 
     override suspend fun sendMessage(articleId: String, message: String, answerToMessageId: String?) {

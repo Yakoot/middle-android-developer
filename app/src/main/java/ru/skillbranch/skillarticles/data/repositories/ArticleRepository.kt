@@ -24,6 +24,8 @@ interface IArticleRepository {
     fun getAppSettings(): LiveData<AppSettings>
     suspend fun toggleLike(articleId: String): Boolean
     suspend fun toggleBookmark(articleId: String): Boolean
+    suspend fun addBookmark(articleId: String)
+    suspend fun removeBookmark(articleId: String)
     fun isAuth(): LiveData<Boolean>
     suspend fun sendMessage(articleId: String, text: String, answerToSlug: String?)
     fun loadAllComments(articleId: String, total: Int, errHandler: (Throwable) -> Unit): CommentsDataFactory
@@ -95,9 +97,29 @@ object ArticleRepository : IArticleRepository {
             errHandler = errHandler
         )
 
+    override suspend fun addBookmark(articleId: String) {
+        if (preferences.accessToken.isEmpty()) return
+        try {
+            network.addBookmark(articleId, preferences.accessToken)
+        } catch (e: Throwable) {
+            if (e is NoNetworkError) return
+            throw e
+        }
+    }
+
+    override suspend fun removeBookmark(articleId: String) {
+        if (preferences.accessToken.isEmpty()) return
+        try {
+            network.removeBookmark(articleId, preferences.accessToken)
+        } catch (e: Throwable) {
+            if (e is NoNetworkError) return
+            throw e
+        }
+    }
+
 
     override suspend fun decrementLike(articleId: String) {
-        if (preferences.accessToken.isNullOrEmpty()) {
+        if (preferences.accessToken.isEmpty()) {
             articleCountsDao.decrementLike(articleId)
             return
         }
@@ -114,7 +136,7 @@ object ArticleRepository : IArticleRepository {
     }
 
     override suspend fun incrementLike(articleId: String) {
-        if (preferences.accessToken.isNullOrEmpty()) {
+        if (preferences.accessToken.isEmpty()) {
             articleCountsDao.incrementLike(articleId)
             return
         }

@@ -26,6 +26,7 @@ interface IArticlesRepository {
     suspend fun incrementTagUseCount(tag: String)
     suspend fun findLastArticleId(): String?
     suspend fun fetchArticleContent(articleId: String)
+    suspend fun removeArticleContent(articleId: String)
 }
 
 object ArticlesRepository: IArticlesRepository {
@@ -105,6 +106,10 @@ object ArticlesRepository: IArticlesRepository {
     override suspend fun fetchArticleContent(articleId: String) {
         val content = network.loadArticleContent(articleId)
         articlesContentDao.insert(content.toArticleContent())
+    }
+
+    override suspend fun removeArticleContent(articleId: String) {
+        articlesContentDao.delete(articleId)
     }
 }
 

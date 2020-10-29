@@ -14,6 +14,7 @@ import ru.skillbranch.skillarticles.data.local.AppDb
 import ru.skillbranch.skillarticles.data.local.PrefManager
 import ru.skillbranch.skillarticles.data.remote.NetworkMonitor
 import ru.skillbranch.skillarticles.data.remote.err.ApiError
+import ru.skillbranch.skillarticles.data.remote.err.NoNetworkError
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
 import ru.skillbranch.skillarticles.data.repositories.ArticlesRepository
 import ru.skillbranch.skillarticles.data.repositories.RootRepository
@@ -202,36 +203,36 @@ class RepositoryTest1 {
         }
     }
 
-//    @Test
-//    fun fetch_remove_content() {
-//        server.enqueue(
-//            MockResponse()
-//                .setResponseCode(200)
-//                .setBody(TestStubs.articleContentRes)
-//        )
-//        runBlocking {
-//            testDb.articlesDao().insert(stubArticle)
-//        }
-//
-//        runBlocking {
-//            NetworkMonitor.setNetworkIsConnected(false)
-//            try {
-//                articlesRepository.fetchArticleContent("5f27d6cf83218a001d059af0")
-//            } catch (e: Throwable) {
-//                Assert.assertEquals(true, e is NoNetworkError)
-//            }
-//            NetworkMonitor.setNetworkIsConnected(true)
-//
-//            articlesRepository.fetchArticleContent("5f27d6cf83218a001d059af0")
-//            var actual = testDb.articleContentsDao().findArticlesContentsTest()
-//            Assert.assertEquals(1, actual.size)
-//            Assert.assertEquals("5f27d6cf83218a001d059af0", actual.firstOrNull()?.articleId)
-//
-//            articlesRepository.removeArticleContent("5f27d6cf83218a001d059af0")
-//            actual = testDb.articleContentsDao().findArticlesContentsTest()
-//            Assert.assertEquals(0, actual.size)
-//        }
-//    }
+    @Test
+    fun fetch_remove_content() {
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .setBody(TestStubs.articleContentRes)
+        )
+        runBlocking {
+            testDb.articlesDao().insert(stubArticle)
+        }
+
+        runBlocking {
+            NetworkMonitor.setNetworkIsConnected(false)
+            try {
+                articlesRepository.fetchArticleContent("5f27d6cf83218a001d059af0")
+            } catch (e: Throwable) {
+                Assert.assertEquals(true, e is NoNetworkError)
+            }
+            NetworkMonitor.setNetworkIsConnected(true)
+
+            articlesRepository.fetchArticleContent("5f27d6cf83218a001d059af0")
+            var actual = testDb.articleContentsDao().findArticlesContentsTest()
+            Assert.assertEquals(1, actual.size)
+            Assert.assertEquals("5f27d6cf83218a001d059af0", actual.firstOrNull()?.articleId)
+
+            articlesRepository.removeArticleContent("5f27d6cf83218a001d059af0")
+            actual = testDb.articleContentsDao().findArticlesContentsTest()
+            Assert.assertEquals(0, actual.size)
+        }
+    }
 
     @Test
     fun login() {
@@ -385,81 +386,81 @@ class RepositoryTest1 {
         }
     }
 
-//    @Test
-//    fun add_bookmark() {
-//        runBlocking {
-//            testDb.articlesDao().insert(stubArticle)
-//        }
-//
-//        runBlocking {
-//            NetworkMonitor.setNetworkIsConnected(false)
-//            articleRepository.addBookmark("5f27d6cf83218a001d059af0")
-//
-//            NetworkMonitor.setNetworkIsConnected(true)
-//            server.enqueue(
-//                MockResponse()
-//                    .setResponseCode(200)
-//                    .setBody("""{"message": "Add to bookmarks"}""")
-//            )
-//            articleRepository.addBookmark("5f27d6cf83218a001d059af0")
-//
-//            val recordedRequest = server.takeRequest()
-//            Assert.assertEquals("POST", recordedRequest.method)
-//            Assert.assertEquals("/articles/5f27d6cf83218a001d059af0/addBookmark", recordedRequest.path)
-//            Assert.assertEquals("Bearer test_acess_token",recordedRequest.headers["Authorization"])
-//
-//            server.enqueue(
-//                MockResponse()
-//                    .setResponseCode(400)
-//                    .setBody("""{"message": "Article already don`t like"}""")
-//            )
-//            try {
-//                articleRepository.addBookmark("5f27d6cf83218a001d059af0")
-//            }catch (e:Throwable){
-//                Assert.assertEquals(true, e is ApiError.BadRequest)
-//                Assert.assertEquals("Article already don`t like", e.message)
-//            }
-//
-//        }
-//    }
+    @Test
+    fun add_bookmark() {
+        runBlocking {
+            testDb.articlesDao().insert(stubArticle)
+        }
 
-//    @Test
-//    fun remove_bookmark() {
-//        runBlocking {
-//            testDb.articlesDao().insert(stubArticle)
-//        }
-//
-//        runBlocking {
-//            NetworkMonitor.setNetworkIsConnected(false)
-//            articleRepository.removeBookmark("5f27d6cf83218a001d059af0")
-//
-//            NetworkMonitor.setNetworkIsConnected(true)
-//            server.enqueue(
-//                MockResponse()
-//                    .setResponseCode(200)
-//                    .setBody("""{"message": "Remove from bookmarks"}""")
-//            )
-//            articleRepository.removeBookmark("5f27d6cf83218a001d059af0")
-//
-//            val recordedRequest = server.takeRequest()
-//            Assert.assertEquals("POST", recordedRequest.method)
-//            Assert.assertEquals("/articles/5f27d6cf83218a001d059af0/removeBookmark", recordedRequest.path)
-//            Assert.assertEquals("Bearer test_acess_token",recordedRequest.headers["Authorization"])
-//
-//            server.enqueue(
-//                MockResponse()
-//                    .setResponseCode(400)
-//                    .setBody("""{"message": "Already remove from bookmarks"}""")
-//            )
-//            try {
-//                articleRepository.removeBookmark("5f27d6cf83218a001d059af0")
-//            }catch (e:Throwable){
-//                Assert.assertEquals(true, e is ApiError.BadRequest)
-//                Assert.assertEquals("Already remove from bookmarks", e.message)
-//            }
-//
-//        }
-//    }
+        runBlocking {
+            NetworkMonitor.setNetworkIsConnected(false)
+            articleRepository.addBookmark("5f27d6cf83218a001d059af0")
+
+            NetworkMonitor.setNetworkIsConnected(true)
+            server.enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .setBody("""{"message": "Add to bookmarks"}""")
+            )
+            articleRepository.addBookmark("5f27d6cf83218a001d059af0")
+
+            val recordedRequest = server.takeRequest()
+            Assert.assertEquals("POST", recordedRequest.method)
+            Assert.assertEquals("/articles/5f27d6cf83218a001d059af0/addBookmark", recordedRequest.path)
+            Assert.assertEquals("Bearer test_acess_token",recordedRequest.headers["Authorization"])
+
+            server.enqueue(
+                MockResponse()
+                    .setResponseCode(400)
+                    .setBody("""{"message": "Article already don`t like"}""")
+            )
+            try {
+                articleRepository.addBookmark("5f27d6cf83218a001d059af0")
+            }catch (e:Throwable){
+                Assert.assertEquals(true, e is ApiError.BadRequest)
+                Assert.assertEquals("Article already don`t like", e.message)
+            }
+
+        }
+    }
+
+    @Test
+    fun remove_bookmark() {
+        runBlocking {
+            testDb.articlesDao().insert(stubArticle)
+        }
+
+        runBlocking {
+            NetworkMonitor.setNetworkIsConnected(false)
+            articleRepository.removeBookmark("5f27d6cf83218a001d059af0")
+
+            NetworkMonitor.setNetworkIsConnected(true)
+            server.enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .setBody("""{"message": "Remove from bookmarks"}""")
+            )
+            articleRepository.removeBookmark("5f27d6cf83218a001d059af0")
+
+            val recordedRequest = server.takeRequest()
+            Assert.assertEquals("POST", recordedRequest.method)
+            Assert.assertEquals("/articles/5f27d6cf83218a001d059af0/removeBookmark", recordedRequest.path)
+            Assert.assertEquals("Bearer test_acess_token",recordedRequest.headers["Authorization"])
+
+            server.enqueue(
+                MockResponse()
+                    .setResponseCode(400)
+                    .setBody("""{"message": "Already remove from bookmarks"}""")
+            )
+            try {
+                articleRepository.removeBookmark("5f27d6cf83218a001d059af0")
+            }catch (e:Throwable){
+                Assert.assertEquals(true, e is ApiError.BadRequest)
+                Assert.assertEquals("Already remove from bookmarks", e.message)
+            }
+
+        }
+    }
 
     @Test
     fun refresh_comment_count() {

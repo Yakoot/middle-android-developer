@@ -3,16 +3,13 @@ package ru.skillbranch.skillarticles.ui.dialogs
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -71,19 +68,6 @@ class ChoseCategoryDialog : DialogFragment() {
         super.onSaveInstanceState(outState)
     }
 
-}
-
-class CategoryAdapter(private val listener: (String, Boolean) -> Unit) :
-    ListAdapter<CategoryDataItem, CategoryVH>(CategoryDiffCallback()) {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryVH = CategoryVH(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_category_dialog, parent, false),
-        listener
-    )
-
-    override fun onBindViewHolder(holder: CategoryVH, position: Int) {
-        holder.bind(getItem(position))
-    }
 }
 
 class CategoryVH(override val containerView: View, val listener: (String, Boolean) -> Unit) :

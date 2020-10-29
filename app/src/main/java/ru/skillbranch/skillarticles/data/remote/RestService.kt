@@ -42,12 +42,12 @@ interface RestService {
     @POST("articles/{article}/decrementLikes")
     suspend fun decrementLike(
         @Path("article") articleId: String,
-        @Header("Authorization") token: String?
+        @Header("Authorization") token: String
     ): LikeRes
 
     @POST("articles/{article}/incrementLikes")
     suspend fun incrementLike(
         @Path("article") articleId: String,
-        @Header("Authorization") token: String?
+        @Header("Authorization") token: String
     ): LikeRes
 }

@@ -14,6 +14,7 @@ import ru.skillbranch.skillarticles.data.local.entities.ArticleFull
 import ru.skillbranch.skillarticles.data.models.AppSettings
 import ru.skillbranch.skillarticles.data.remote.NetworkManager
 import ru.skillbranch.skillarticles.data.remote.RestService
+import ru.skillbranch.skillarticles.data.remote.err.NoNetworkError
 import ru.skillbranch.skillarticles.data.remote.req.MessageReq
 import ru.skillbranch.skillarticles.data.remote.res.CommentRes
 import ru.skillbranch.skillarticles.extensions.data.toArticleContent
@@ -21,8 +22,8 @@ import ru.skillbranch.skillarticles.extensions.data.toArticleContent
 interface IArticleRepository {
     fun findArticle(articleId: String): LiveData<ArticleFull>
     fun getAppSettings(): LiveData<AppSettings>
-    suspend fun toggleLike(articleId: String)
-    suspend fun toggleBookmark(articleId: String)
+    suspend fun toggleLike(articleId: String): Boolean
+    suspend fun toggleBookmark(articleId: String): Boolean
     fun isAuth(): LiveData<Boolean>
     suspend fun sendMessage(articleId: String, text: String, answerToSlug: String?)
     fun loadAllComments(articleId: String, total: Int, errHandler: (Throwable) -> Unit): CommentsDataFactory
@@ -61,12 +62,12 @@ object ArticleRepository : IArticleRepository {
     override fun getAppSettings(): LiveData<AppSettings> =
         preferences.appSettings
 
-    override suspend fun toggleLike(articleId: String) {
-        articlePersonalDao.toggleLikeOrInsert(articleId)
+    override suspend fun toggleLike(articleId: String): Boolean {
+        return articlePersonalDao.toggleLikeOrInsert(articleId)
     }
 
-    override suspend fun toggleBookmark(articleId: String) {
-        articlePersonalDao.toggleBookmarkOrInsert(articleId)
+    override suspend fun toggleBookmark(articleId: String): Boolean {
+        return articlePersonalDao.toggleBookmarkOrInsert(articleId)
     }
 
     override fun updateSettings(appSettings: AppSettings) {
@@ -104,7 +105,10 @@ object ArticleRepository : IArticleRepository {
             val res = network.decrementLike(articleId, preferences.accessToken)
             articleCountsDao.updateLike(articleId, res.likeCount)
         } catch (e: Throwable) {
-            articleCountsDao.decrementLike(articleId)
+            if (e is NoNetworkError) {
+                articleCountsDao.decrementLike(articleId)
+                return
+            }
             throw e
         }
     }
@@ -118,18 +122,25 @@ object ArticleRepository : IArticleRepository {
             val res = network.incrementLike(articleId, preferences.accessToken)
             articleCountsDao.updateLike(articleId, res.likeCount)
         } catch (e: Throwable) {
-            articleCountsDao.incrementLike(articleId)
+            if (e is NoNetworkError) {
+                articleCountsDao.incrementLike(articleId)
+                return
+            }
             throw e
         }
     }
 
-    override suspend fun sendMessage(articleId: String, message: String, answerToMessageId: String?) {
+    override suspend fun sendMessage(
+        articleId: String,
+        message: String,
+        answerToMessageId: String?
+    ) {
         val (_, messageCount) = network.sendMessage(
             articleId,
             MessageReq(message, answerToMessageId),
             preferences.accessToken
         )
-        articleCountsDao.incrementCommentsCount(articleId)
+        articleCountsDao.updateCommentsCount(articleId, messageCount)
     }
 
     suspend fun refreshCommentsCount(articleId: String) {

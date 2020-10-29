@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.MutableLiveData
 
@@ -27,11 +28,13 @@ object NetworkMonitor {
             NetworkRequest.Builder().build(),
             object: ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
+                    Log.d("ConnectivityManager", "onAvailable")
                     isConnected = true
                     isConnectedLive.postValue(true)
                 }
 
                 override fun onLost(network: Network) {
+                    Log.d("ConnectivityManager", "onLost")
                     isConnected = false
                     isConnectedLive.postValue(false)
                     networkTypeLive.postValue(NetworkType.NONE)
@@ -41,6 +44,7 @@ object NetworkMonitor {
                     network: Network,
                     networkCapabilities: NetworkCapabilities
                 ) {
+                    Log.d("ConnectivityManager", "onCapabilitiesChanged")
                     networkTypeLive.postValue(obtainNetworkType(networkCapabilities))
                 }
             }

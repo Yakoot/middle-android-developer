@@ -1,10 +1,7 @@
 package ru.skillbranch.skillarticles.data.delegates
 
-import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
 import com.squareup.moshi.JsonAdapter
 import ru.skillbranch.skillarticles.data.local.PrefManager
-import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -14,10 +11,10 @@ class PrefDelegate<T>(private val defaultValue: T) {
     operator fun provideDelegate(
         thisRef: PrefManager,
         prop: KProperty<*>
-    ): ReadWriteProperty<PrefManager, T?> {
+    ): ReadWriteProperty<PrefManager, T> {
         val key = prop.name
-        return object : ReadWriteProperty<PrefManager, T?> {
-            override fun getValue(thisRef: PrefManager, property: KProperty<*>): T? {
+        return object : ReadWriteProperty<PrefManager, T> {
+            override fun getValue(thisRef: PrefManager, property: KProperty<*>): T {
                 if (storedValue == null) {
                     @Suppress("UNCHECKED_CAST")
                     storedValue = when (defaultValue) {
@@ -32,10 +29,10 @@ class PrefDelegate<T>(private val defaultValue: T) {
                         else -> error("This type can not be stored into Preferences")
                     }
                 }
-                return storedValue
+                return storedValue!!
             }
 
-            override fun setValue(thisRef: PrefManager, property: KProperty<*>, value: T?) {
+            override fun setValue(thisRef: PrefManager, property: KProperty<*>, value: T) {
                 with(thisRef.preferences.edit()) {
                     when (value) {
                         is String -> putString(key, value)
@@ -54,9 +51,7 @@ class PrefDelegate<T>(private val defaultValue: T) {
     }
 }
 
-class PrefObjDelegate<T>(
-    private val adapter: JsonAdapter<T>
-) {
+class PrefObjDelegate<T>(private val adapter: JsonAdapter<T>){
     private var storedValue: T? = null
 
     operator fun provideDelegate(
@@ -64,18 +59,19 @@ class PrefObjDelegate<T>(
         prop: KProperty<*>
     ): ReadWriteProperty<PrefManager, T?> {
         val key = prop.name
-        return object : ReadWriteProperty<PrefManager, T?> {
+        return object : ReadWriteProperty<PrefManager, T?>{
             override fun getValue(thisRef: PrefManager, property: KProperty<*>): T? {
-                if (storedValue == null) {
-                    storedValue = thisRef.preferences.getString(key, null)?.let { adapter.fromJson(it)}
+                if(storedValue == null){
+                    storedValue = thisRef.preferences.getString(key, null)
+                        ?.let { adapter.fromJson(it) }
                 }
                 return storedValue
             }
 
             override fun setValue(thisRef: PrefManager, property: KProperty<*>, value: T?) {
                 storedValue = value
-                with(thisRef.preferences.edit()) {
-                    putString(key, value?.let {adapter.toJson(it)})
+                with(thisRef.preferences.edit()){
+                    putString(key, value?.let { adapter.toJson(it) })
                     apply()
                 }
             }

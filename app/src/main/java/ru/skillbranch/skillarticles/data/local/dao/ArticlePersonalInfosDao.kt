@@ -48,8 +48,9 @@ interface ArticlePersonalInfosDao : BaseDao<ArticlePersonalInfo> {
     suspend fun isBookmarked(articleId: String): Boolean
 
     @Transaction
-    suspend fun toggleLikeOrInsert(articleId: String) {
+    suspend fun toggleLikeOrInsert(articleId: String): Boolean {
         if (toggleLike(articleId) == 0) insert(ArticlePersonalInfo(articleId = articleId, isLike = true))
+        return isLiked(articleId)
     }
 
     @Query(
@@ -69,4 +70,7 @@ interface ArticlePersonalInfosDao : BaseDao<ArticlePersonalInfo> {
 
     @Query("SELECT * FROM article_personal_infos WHERE article_id = :articleId")
     suspend fun findPersonalInfosTest(articleId: String): ArticlePersonalInfo
+
+    @Query("SELECT is_like FROM article_personal_infos WHERE article_id = :articleId ")
+    suspend fun isLiked(articleId: String): Boolean
 }

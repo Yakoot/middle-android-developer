@@ -12,6 +12,7 @@ import ru.skillbranch.skillarticles.AppConfig
 import ru.skillbranch.skillarticles.data.JsonConverter.moshi
 import ru.skillbranch.skillarticles.data.remote.interceptors.ErrorStatusInterceptor
 import ru.skillbranch.skillarticles.data.remote.interceptors.NetworkStatusInterceptor
+import ru.skillbranch.skillarticles.data.remote.interceptors.TokenAuthenticator
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -28,6 +29,7 @@ object NetworkManager {
             .addInterceptor(NetworkStatusInterceptor())
             .addInterceptor(logging)
             .addInterceptor(ErrorStatusInterceptor())
+            .authenticator(TokenAuthenticator())
             .build()
 
         // retrofit

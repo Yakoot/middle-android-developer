@@ -26,10 +26,10 @@ object NetworkManager {
         val client = OkHttpClient().newBuilder()
             .readTimeout(2, TimeUnit.SECONDS)
             .writeTimeout(5, TimeUnit.SECONDS)
+            .authenticator(TokenAuthenticator())
             .addInterceptor(NetworkStatusInterceptor())
             .addInterceptor(logging)
             .addInterceptor(ErrorStatusInterceptor())
-            .authenticator(TokenAuthenticator())
             .build()
 
         // retrofit

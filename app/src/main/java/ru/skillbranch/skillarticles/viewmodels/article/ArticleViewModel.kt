@@ -109,33 +109,32 @@ class ArticleViewModel(
 
     //personal article info
     override fun handleBookmark() {
+        launchSafety {
+            val isBookmarked = repository.toggleBookmark(articleId)
 
-        val msg = if (!currentState.isBookmark) "Add to bookmarks" else "Remove from bookmarks"
+            if (isBookmarked) repository.addBookmark(articleId)
+            else repository.removeBookmark(articleId)
 
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.toggleBookmark(articleId)
-            withContext(Dispatchers.Main) {
-                notify(Notify.TextMessage(msg))
-            }
+            val msg = if (isBookmarked) "Add to bookmarks" else "Remove from bookmarks"
+            notify(Notify.TextMessage(msg))
         }
     }
 
     override fun handleLike() {
-        val isLiked = currentState.isLike
-        val msg = if (!isLiked) Notify.TextMessage("Mark is liked")
-        else {
-            Notify.ActionMessage(
-                "Don`t like it anymore", //message
-                "No, still like it" //action label on snackbar
-            ) { handleLike() } // handler function , if press "No, still like it" on snackbar, then toggle again
-        }
+        launchSafety {
+            val isLiked = repository.toggleLike(articleId)
 
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.toggleLike(articleId)
-            if (isLiked) repository.decrementLike(articleId) else repository.incrementLike(articleId)
-            withContext(Dispatchers.Main) {
-                notify(msg)
+            if (isLiked) repository.incrementLike(articleId)
+            else repository.decrementLike(articleId)
+
+            val msg = if (isLiked) Notify.TextMessage("Articles marked as liked")
+            else {
+                Notify.ActionMessage(
+                    "Don`t like it anymore", //message
+                    "No, still like it" //action label on snackbar
+                ) { handleLike() } // handler function , if press "No, still like it" on snackbar, then toggle again
             }
+            notify(msg)
         }
     }
 

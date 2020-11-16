@@ -1,10 +1,12 @@
 package ru.skillbranch.skillarticles.ui.profile
 
 import android.net.Uri
+import android.os.Environment
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -17,6 +19,9 @@ import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 import ru.skillbranch.skillarticles.viewmodels.profile.PendingAction
 import ru.skillbranch.skillarticles.viewmodels.profile.ProfileState
 import ru.skillbranch.skillarticles.viewmodels.profile.ProfileViewModel
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ProfileFragment : BaseFragment<ProfileViewModel>() {
 
@@ -24,16 +29,17 @@ class ProfileFragment : BaseFragment<ProfileViewModel>() {
     override val layout: Int = R.layout.fragment_profile
     override val binding: ProfileBinding by lazy { ProfileBinding() }
 
-    private val permissionsResultCallback = registerForActivityResult(RequestMultiplePermissions()) { result ->
-        val permissionsResult = result.mapValues { (permission, isGranted) ->
-            if (isGranted) true to true
-            else false to ActivityCompat.shouldShowRequestPermissionRationale(
-                requireActivity(),
-                permission
-            )
+    private val permissionsResultCallback =
+        registerForActivityResult(RequestMultiplePermissions()) { result ->
+            val permissionsResult = result.mapValues { (permission, isGranted) ->
+                if (isGranted) true to true
+                else false to ActivityCompat.shouldShowRequestPermissionRationale(
+                    requireActivity(),
+                    permission
+                )
+            }
+            viewModel.handlePermission(permissionsResult)
         }
-        viewModel.handlePermission(permissionsResult)
-    }
 
     private val galleryResultCallback = registerForActivityResult(GetContent()) { result ->
         if (result != null) {
@@ -43,9 +49,10 @@ class ProfileFragment : BaseFragment<ProfileViewModel>() {
     }
 
 
-    private val settingsResultCallback = registerForActivityResult(StartActivityForResult()) { result ->
-        // DO SOMETHING
-    }
+    private val settingsResultCallback =
+        registerForActivityResult(StartActivityForResult()) { result ->
+            // DO SOMETHING
+        }
 
 
     private val cameraResultCallback = registerForActivityResult(TakePicture()) { result ->
@@ -60,7 +67,8 @@ class ProfileFragment : BaseFragment<ProfileViewModel>() {
 
     override fun setupViews() {
         iv_avatar.setOnClickListener {
-            viewModel.handleTestAction()
+            val uri = prepareTestUri()
+            viewModel.handleTestAction(uri)
         }
 
         viewModel.observePermissions(viewLifecycleOwner) {
@@ -71,6 +79,7 @@ class ProfileFragment : BaseFragment<ProfileViewModel>() {
             when (it) {
                 is PendingAction.GalleryAction -> galleryResultCallback.launch(it.payload)
                 is PendingAction.SettingsAction -> settingsResultCallback.launch(it.payload)
+                is PendingAction.CameraAction -> cameraResultCallback.launch(it.payload)
             }
         }
     }
@@ -89,11 +98,31 @@ class ProfileFragment : BaseFragment<ProfileViewModel>() {
         }
     }
 
+    private fun prepareTestUri(): Uri {
+        val timestamp = SimpleDateFormat("HHmmss").format(Date())
+        val storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val tempFile = File.createTempFile(
+            "JPEG_${timestamp}",
+            ".jpg",
+            storageDir
+        )
+
+        val contentUri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.provider",
+            tempFile
+        )
+
+        Log.e("ProfileFragment", "file uri: ${tempFile.toUri()} content uri: $contentUri")
+
+        return contentUri
+    }
+
     private fun removeTempUri(uri: Uri) {
         requireContext().contentResolver.delete(uri, null, null)
     }
 
-    inner class ProfileBinding: Binding() {
+    inner class ProfileBinding : Binding() {
         var pendingAction: PendingAction? = null
 
         var avatar by RenderProp("") {
@@ -115,7 +144,6 @@ class ProfileFragment : BaseFragment<ProfileViewModel>() {
         var respect by RenderProp(0) {
             tv_respect.text = "Respect: $it"
         }
-
 
 
         override fun bind(data: IViewModelState) {

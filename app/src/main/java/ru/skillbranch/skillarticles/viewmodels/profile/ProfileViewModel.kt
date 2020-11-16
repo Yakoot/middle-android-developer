@@ -44,8 +44,8 @@ class ProfileViewModel(handle: SavedStateHandle) : BaseViewModel<ProfileState>(h
         activityResults.value = Event(action)
     }
 
-    fun handleTestAction() {
-        val pendingAction = PendingAction.GalleryAction("omage/jpeg")
+    fun handleTestAction(uri: Uri) {
+        val pendingAction = PendingAction.CameraAction(uri)
         updateState { it.copy(pendingAction = pendingAction) }
 
         requestPermissions(storagePermissions)

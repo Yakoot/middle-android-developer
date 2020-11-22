@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
+import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -74,6 +75,10 @@ abstract class BaseViewModel<T : IViewModelState>(
 
     open fun navigate(command: NavigationCommand) {
         navigation.value = Event(command)
+    }
+
+    fun navigateWithAction(navDirections: NavDirections) {
+        navigate(NavigationCommand.To(navDirections.actionId, navDirections.arguments))
     }
 
     /***

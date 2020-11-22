@@ -93,14 +93,30 @@
 
             <argument
                 android:name="private_destination"
-                app:argType="integer"
-                android:defaultValue="-1" />
+                android:defaultValue="-1"
+                app:argType="integer" />
+            <action
+                android:id="@+id/action_nav_auth_to_nav_register"
+                app:destination="@id/nav_register" />
+            <action
+                android:id="@+id/action_nav_auth_to_page_privacy_policy"
+                app:destination="@id/page_privacy_policy" />
         </fragment>
         <fragment
             android:id="@+id/page_privacy_policy"
             android:name="ru.skillbranch.skillarticles.ui.auth.PrivacyPolicyFragment"
             android:label="@string/title_privacy_policy"
             tools:layout="@layout/fragment_privacy_policy" />
+        <fragment android:id="@+id/nav_register"
+            android:name="ru.skillbranch.skillarticles.ui.auth.RegistrationFragment"
+            tools:layout="@layout/fragment_registration"
+            android:label="@string/title_registration">
+
+            <argument
+                android:name="private_destination"
+                android:defaultValue="-1"
+                app:argType="integer" />
+        </fragment>
 
     </navigation>
 

@@ -86,5 +86,5 @@ interface RestService {
     suspend fun editProfile(@Body editProfileReq: EditProfileReq, @Header("Authorization") auth: String): User
 
     @POST("auth/register")
-    suspend fun register(@Body registerReq: RegisterReq): AuthRes
+    suspend fun register(@Body registrationReq: RegistrationReq): AuthRes
 }

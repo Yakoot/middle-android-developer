@@ -4,10 +4,7 @@ import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 import ru.skillbranch.skillarticles.data.models.User
-import ru.skillbranch.skillarticles.data.remote.req.EditProfileReq
-import ru.skillbranch.skillarticles.data.remote.req.LoginReq
-import ru.skillbranch.skillarticles.data.remote.req.MessageReq
-import ru.skillbranch.skillarticles.data.remote.req.RefreshReq
+import ru.skillbranch.skillarticles.data.remote.req.*
 import ru.skillbranch.skillarticles.data.remote.res.*
 
 interface RestService {
@@ -87,4 +84,7 @@ interface RestService {
 
     @PUT("profile")
     suspend fun editProfile(@Body editProfileReq: EditProfileReq, @Header("Authorization") auth: String): User
+
+    @POST("auth/register")
+    suspend fun register(@Body registerReq: RegisterReq): AuthRes
 }

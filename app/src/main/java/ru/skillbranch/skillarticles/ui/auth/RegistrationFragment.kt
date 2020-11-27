@@ -35,18 +35,9 @@ class RegistrationFragment() : BaseFragment<AuthViewModel>() {
 
     private val args: RegistrationFragmentArgs by navArgs()
 
-    private val nameRegex = Regex("^[\\w\\d-_]{3,}$")
-    private val passRegex = Regex("^[\\w\\d]{8,}$")
-
     override fun setupViews() {
 
         btn_register.setOnClickListener {
-
-            validateName()
-            validateLogin()
-            validatePassword()
-            if (areThereInputErrors()) return@setOnClickListener
-
             viewModel.handleRegister(
                 et_name.text.trim().toString(),
                 et_login.text.trim().toString(),
@@ -54,40 +45,5 @@ class RegistrationFragment() : BaseFragment<AuthViewModel>() {
                 if (args.privateDestination == -1) null else args.privateDestination
             )
         }
-
-        et_name.doAfterTextChanged { validateName(false) }
-        et_login.doAfterTextChanged { validateLogin(false) }
-        et_password.doAfterTextChanged { validatePassword(false) }
-
-    }
-
-    private fun validateName(showError: Boolean = true) {
-        if (nameRegex.matches(et_name.text.trim())) {
-            wrap_name.isErrorEnabled = false
-            wrap_name.error = null
-        }
-        else if (showError) wrap_name.error =
-            "The name must be at least 3 characters long and contain only letters and numbers and can also contain the characters \"-\" and \"_\""
-    }
-
-    private fun validateLogin(showError: Boolean = true) {
-        if (et_login.text.isNotBlank()) {
-            wrap_login.isErrorEnabled = false
-            wrap_login.error = null
-        }
-        else if (showError) wrap_login.error = "Incorrect Email entered"
-    }
-
-    private fun validatePassword(showError: Boolean = true) {
-        if (passRegex.matches(et_password.text.trim())) {
-            wrap_password.isErrorEnabled = false
-            wrap_password.error = null
-        }
-        else if (showError) wrap_password.error =
-            "Password must be at least 8 characters long and contain only letters and numbers"
-    }
-
-    private fun areThereInputErrors(): Boolean {
-        return wrap_name.error != null || wrap_login.error != null || wrap_password.error != null
     }
 }

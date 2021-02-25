@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
+import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -22,6 +23,8 @@ abstract class BaseViewModel<T : IViewModelState>(
     val notifications = MutableLiveData<Event<Notify>>()
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val navigation = MutableLiveData<Event<NavigationCommand>>()
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    val permissions = MutableLiveData<Event<List<String>>>()
     private val loading = MutableLiveData<Loading>(Loading.HIDE_LOADING)
 
     /***
@@ -57,8 +60,9 @@ abstract class BaseViewModel<T : IViewModelState>(
      * соответсвенно при изменении конфигурации и пересоздании Activity уведомление не будет вызвано
      * повторно
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @UiThread
-    protected fun notify(content: Notify) {
+    fun notify(content: Notify) {
         notifications.value = Event(content)
     }
 
@@ -72,6 +76,10 @@ abstract class BaseViewModel<T : IViewModelState>(
 
     open fun navigate(command: NavigationCommand) {
         navigation.value = Event(command)
+    }
+
+    fun navigateWithAction(navDirections: NavDirections) {
+        navigate(NavigationCommand.To(navDirections.actionId, navDirections.arguments))
     }
 
     /***
@@ -152,6 +160,14 @@ abstract class BaseViewModel<T : IViewModelState>(
             hideLoading()
             compHandler?.invoke(it!!)
         }
+    }
+
+    fun requestPermissions(requestedPermissions: List<String>) {
+        permissions.value = Event(requestedPermissions)
+    }
+
+    fun observePermissions(owner: LifecycleOwner, handle: (permissions: List<String>) -> Unit ) {
+        permissions.observe(owner, EventObserver{handle(it)})
     }
 
 }

@@ -55,7 +55,11 @@
         android:id="@+id/nav_profile"
         android:name="ru.skillbranch.skillarticles.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_nav_profile_to_dialog_avatar_actions"
+            app:destination="@id/dialog_avatar_actions" />
+    </fragment>
     <fragment
         android:id="@+id/nav_bookmarks"
         android:name="ru.skillbranch.skillarticles.ui.articles.ArticlesFragment"
@@ -89,14 +93,30 @@
 
             <argument
                 android:name="private_destination"
-                app:argType="integer"
-                android:defaultValue="-1" />
+                android:defaultValue="-1"
+                app:argType="integer" />
+            <action
+                android:id="@+id/action_nav_auth_to_nav_register"
+                app:destination="@id/nav_register" />
+            <action
+                android:id="@+id/action_nav_auth_to_page_privacy_policy"
+                app:destination="@id/page_privacy_policy" />
         </fragment>
         <fragment
             android:id="@+id/page_privacy_policy"
             android:name="ru.skillbranch.skillarticles.ui.auth.PrivacyPolicyFragment"
             android:label="@string/title_privacy_policy"
             tools:layout="@layout/fragment_privacy_policy" />
+        <fragment android:id="@+id/nav_register"
+            android:name="ru.skillbranch.skillarticles.ui.auth.RegistrationFragment"
+            tools:layout="@layout/fragment_registration"
+            android:label="@string/title_registration">
+
+            <argument
+                android:name="private_destination"
+                android:defaultValue="-1"
+                app:argType="integer" />
+        </fragment>
 
     </navigation>
 
@@ -118,6 +138,13 @@
         <argument
             android:name="categories"
             app:argType="ru.skillbranch.skillarticles.data.local.entities.CategoryData[]" />
+    </dialog>
+    <dialog
+        android:id="@+id/dialog_avatar_actions"
+        android:name="ru.skillbranch.skillarticles.ui.dialogs.AvatarActionsDialog">
+        <argument
+            android:name="has_avatar"
+            app:argType="boolean" />
     </dialog>
 
 </navigation>

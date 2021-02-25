@@ -22,6 +22,12 @@ class AuthFragment : BaseFragment<AuthViewModel>() {
         tv_privacy.setOnClickListener {
             viewModel.navigate(NavigationCommand.To(R.id.page_privacy_policy))
         }
+
+        tv_register.setOnClickListener {
+            val action = AuthFragmentDirections.actionNavAuthToNavRegister(args.privateDestination)
+            viewModel.navigateWithAction(action)
+        }
+
         btn_login.setOnClickListener {
             viewModel.handleLogin(
                 et_login.text.toString(),

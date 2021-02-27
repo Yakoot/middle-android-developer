@@ -3,14 +3,12 @@ package ru.skillbranch.skillarticles.data.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import ru.skillbranch.skillarticles.data.local.PrefManager
-import ru.skillbranch.skillarticles.data.remote.NetworkManager
+import ru.skillbranch.skillarticles.data.remote.RestService
 import ru.skillbranch.skillarticles.data.remote.req.LoginReq
 import ru.skillbranch.skillarticles.data.remote.req.RegistrationReq
+import javax.inject.Inject
 
-object RootRepository {
-
-    private val preferences = PrefManager
-    private val network = NetworkManager.api
+class RootRepository @Inject constructor(private val preferences: PrefManager, private val network: RestService): IRepository {
 
     fun isAuth() : LiveData<Boolean> = preferences.isAuthLive
     fun setAuth(auth: Boolean) {

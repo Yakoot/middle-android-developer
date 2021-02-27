@@ -4,9 +4,8 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.skillbranch.skillarticles.data.remote.res.CommentRes
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
 import ru.skillbranch.skillarticles.data.repositories.CommentsDataFactory
@@ -20,12 +19,15 @@ import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 import ru.skillbranch.skillarticles.viewmodels.base.NavigationCommand
 import ru.skillbranch.skillarticles.viewmodels.base.Notify
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
-class ArticleViewModel(
+@HiltViewModel
+class ArticleViewModel @Inject constructor(
     handle: SavedStateHandle,
-    private val articleId: String
+    private val repository: ArticleRepository
 ) : BaseViewModel<ArticleState>(handle, ArticleState()), IArticleViewModel {
-    private val repository = ArticleRepository
+
+    private val articleId: String = handle["article_id"]!!
     private var clearContent: String? = null
     private val listConfig by lazy {
         PagedList.Config.Builder()

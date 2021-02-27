@@ -1,20 +1,9 @@
 package ru.skillbranch.skillarticles.data.local
 
 import androidx.room.*
-import ru.skillbranch.skillarticles.App
 import ru.skillbranch.skillarticles.BuildConfig
 import ru.skillbranch.skillarticles.data.local.dao.*
 import ru.skillbranch.skillarticles.data.local.entities.*
-
-object DbManager {
-    val db = Room.databaseBuilder(
-        App.applicationContext(),
-        AppDb::class.java,
-        AppDb.DATABASE_NAME
-    )
-        .run { if (BuildConfig.DEBUG) fallbackToDestructiveMigration() else this }
-        .build()
-}
 
 @Database(
     entities = [

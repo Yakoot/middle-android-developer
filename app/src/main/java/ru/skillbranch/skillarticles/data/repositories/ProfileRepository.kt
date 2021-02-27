@@ -4,26 +4,32 @@ import androidx.lifecycle.LiveData
 import okhttp3.MultipartBody
 import ru.skillbranch.skillarticles.data.local.PrefManager
 import ru.skillbranch.skillarticles.data.models.User
-import ru.skillbranch.skillarticles.data.remote.NetworkManager
+import ru.skillbranch.skillarticles.data.remote.RestService
 import ru.skillbranch.skillarticles.data.remote.req.EditProfileReq
+import javax.inject.Inject
 
-object ProfileRepository {
-    private val prefs = PrefManager
-    private val network = NetworkManager.api
+interface IProfileRepository : IRepository {
+    fun getProfile(): LiveData<User?>
+    suspend fun uploadAvatar(body: MultipartBody.Part)
+    suspend fun removeAvatar()
+    suspend fun editProfile(name: String, about: String)
+}
 
-    fun getProfile(): LiveData<User?> = prefs.profileLive
+class ProfileRepository @Inject constructor(private val preferences: PrefManager, private val network: RestService): IProfileRepository{
 
-    suspend fun uploadAvatar(body: MultipartBody.Part) {
-        val (url) = network.upload(body, prefs.accessToken)
-        prefs.replaceAvatarUrl(url)
+    override fun getProfile(): LiveData<User?> = preferences.profileLive
+
+    override suspend fun uploadAvatar(body: MultipartBody.Part) {
+        val (url) = network.upload(body, preferences.accessToken)
+        preferences.replaceAvatarUrl(url)
     }
 
-    suspend fun removeAvatar() {
-        network.removeAvatar(prefs.accessToken)
-        prefs.replaceAvatarUrl("")
+    override suspend fun removeAvatar() {
+        network.removeAvatar(preferences.accessToken)
+        preferences.replaceAvatarUrl("")
     }
 
-    suspend fun editProfile(name: String, about: String) {
-        val user = network.editProfile(EditProfileReq(name, about), prefs.accessToken)
-        prefs.profile = user    }
+    override suspend fun editProfile(name: String, about: String) {
+        val user = network.editProfile(EditProfileReq(name, about), preferences.accessToken)
+        preferences.profile = user    }
 }

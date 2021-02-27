@@ -7,9 +7,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.skillbranch.skillarticles.data.local.entities.ArticleItem
 import ru.skillbranch.skillarticles.ui.custom.ArticleItemView
+import javax.inject.Inject
 
-class ArticlesAdapter(
-    private val listener: (ArticleItem, Boolean) -> Unit
+class ArticlesAdapter @Inject constructor(
+    private val listener: IArticlesView
 ) :
     PagedListAdapter<ArticleItem, ArticleVH>(ArticleDiffCallback()) {
 
@@ -19,7 +20,7 @@ class ArticlesAdapter(
     }
 
     override fun onBindViewHolder(holder: ArticleVH, position: Int) {
-        holder.bind(getItem(position), listener)
+        holder.bind(getItem(position), listener::clickArticle)
     }
 }
 

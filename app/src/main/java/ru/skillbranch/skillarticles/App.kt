@@ -3,9 +3,12 @@ package ru.skillbranch.skillarticles
 import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import dagger.hilt.android.HiltAndroidApp
 import ru.skillbranch.skillarticles.data.local.PrefManager
 import ru.skillbranch.skillarticles.data.remote.NetworkMonitor
+import javax.inject.Inject
 
+@HiltAndroidApp
 class App: Application() {
     companion object {
         private var instance: App? = null
@@ -15,6 +18,11 @@ class App: Application() {
         }
     }
 
+    @Inject
+    lateinit var monitor: NetworkMonitor
+    @Inject
+    lateinit var preferences: PrefManager
+
     init {
         instance = this
     }
@@ -22,9 +30,9 @@ class App: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        NetworkMonitor.registerNetworkMonitor(applicationContext)
+        monitor.registerNetworkMonitor()
 
-        val mode = if (PrefManager.isDarkMode == true) AppCompatDelegate.MODE_NIGHT_YES
+        val mode = if (preferences.isDarkMode == true) AppCompatDelegate.MODE_NIGHT_YES
         else AppCompatDelegate.MODE_NIGHT_NO
 
         AppCompatDelegate.setDefaultNightMode(mode)

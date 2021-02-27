@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,10 +21,13 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import ru.skillbranch.skillarticles.data.repositories.ProfileRepository
 import ru.skillbranch.skillarticles.viewmodels.base.*
 import java.io.InputStream
+import javax.inject.Inject
 
-class ProfileViewModel(handle: SavedStateHandle) : BaseViewModel<ProfileState>(handle, ProfileState()) {
-
-    private val repository = ProfileRepository
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    handle: SavedStateHandle,
+    private val repository: ProfileRepository
+) : BaseViewModel<ProfileState>(handle, ProfileState()) {
 
     private val activityResults = MutableLiveData<Event<PendingAction>>()
     private val storagePermissions = listOf<String>(

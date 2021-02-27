@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.data.local
 
+import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.lifecycle.LiveData
@@ -7,8 +8,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import androidx.preference.PreferenceManager
-import ru.skillbranch.skillarticles.App
-import ru.skillbranch.skillarticles.data.JsonConverter.moshi
+import com.squareup.moshi.Moshi
 import ru.skillbranch.skillarticles.data.delegates.PrefDelegate
 import ru.skillbranch.skillarticles.data.delegates.PrefLiveDelegate
 import ru.skillbranch.skillarticles.data.delegates.PrefLiveObjDelegate
@@ -16,9 +16,9 @@ import ru.skillbranch.skillarticles.data.delegates.PrefObjDelegate
 import ru.skillbranch.skillarticles.data.models.AppSettings
 import ru.skillbranch.skillarticles.data.models.User
 
-object PrefManager {
+class PrefManager(context: Context, val moshi: Moshi) {
     internal val preferences: SharedPreferences by lazy {
-        PreferenceManager.getDefaultSharedPreferences(App.applicationContext())
+        PreferenceManager.getDefaultSharedPreferences(context)
     }
 
     var isAuth by PrefDelegate(false)
